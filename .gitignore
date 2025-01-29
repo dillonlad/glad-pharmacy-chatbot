@@ -1,0 +1,5 @@
+/datasets
+/results
+/s3_chatbot_model
+/__pycache__
+/.venv

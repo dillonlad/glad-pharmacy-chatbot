@@ -1,0 +1,602 @@
+[
+    {
+      "context": "Our branch in Lowdham is open from 9am to 6pm on weekdays. The Lowdham branch is open 9am to 1pm on Saturdays. The Lowdham branch is closed on Sundays. Our branch in Calverton is open 9am to 6pm on weekdays. The Calverton branch is open 9am to 5pm on Saturdays. The Calverton branch is closed on Sundays.",
+      "question": "What are the opening hours of the Lowdham branch on weekdays?",
+      "answer": "Lowdham branch is open from 9am to 6pm on weekdays.",
+      "answer_start": 33
+    },
+    {
+      "context": "Our branch in Lowdham is open from 9am to 6pm on weekdays. The Lowdham branch is open 9am to 1pm on Saturdays. The Lowdham branch is closed on Sundays. Our branch in Calverton is open 9am to 6pm on weekdays. The Calverton branch is open 9am to 5pm on Saturdays. The Calverton branch is closed on Sundays.",
+      "question": "When does the Calverton branch close on Saturdays?",
+      "answer": "Calverton branch closes at 5pm on Saturdays.",
+      "answer_start": 161
+    },
+    {
+      "context": "Our branch in Lowdham is open from 9am to 6pm on weekdays. The Lowdham branch is open 9am to 1pm on Saturdays. The Lowdham branch is closed on Sundays. Our branch in Calverton is open 9am to 6pm on weekdays. The Calverton branch is open 9am to 5pm on Saturdays. The Calverton branch is closed on Sundays.",
+      "question": "Is the Lowdham branch open on Sundays?",
+      "answer": "No, the Lowdham branch is closed on Sundays.",
+      "answer_start": 98
+    },
+    {
+      "context": "Our branch in Lowdham is open from 9am to 6pm on weekdays. The Lowdham branch is open 9am to 1pm on Saturdays. The Lowdham branch is closed on Sundays. Our branch in Calverton is open 9am to 6pm on weekdays. The Calverton branch is open 9am to 5pm on Saturdays. The Calverton branch is closed on Sundays.",
+      "question": "At what time does the Calverton branch open on weekdays?",
+      "answer": "Calverton branch opens at 9am on weekdays.",
+      "answer_start": 122
+    },
+    {
+      "context": "Our branch in Lowdham is open from 9am to 6pm on weekdays. The Lowdham branch is open 9am to 1pm on Saturdays. The Lowdham branch is closed on Sundays. Our branch in Calverton is open 9am to 6pm on weekdays. The Calverton branch is open 9am to 5pm on Saturdays. The Calverton branch is closed on Sundays.",
+      "question": "What are the Saturday opening hours for the Lowdham branch?",
+      "answer": "Lowdham branch is open from 9am to 1pm on Saturdays.",
+      "answer_start": 67
+    },
+    {
+      "context": "Our branch in Lowdham is open from 9am to 6pm on weekdays. The Lowdham branch is open 9am to 1pm on Saturdays. The Lowdham branch is closed on Sundays. Our branch in Calverton is open 9am to 6pm on weekdays. The Calverton branch is open 9am to 5pm on Saturdays. The Calverton branch is closed on Sundays.",
+      "question": "On which days is the Calverton branch closed?",
+      "answer": "Calverton branch is closed on Sundays.",
+      "answer_start": 180
+    },
+    {
+      "context": "Our branch in Lowdham is open from 9am to 6pm on weekdays. The Lowdham branch is open 9am to 1pm on Saturdays. The Lowdham branch is closed on Sundays. Our branch in Calverton is open 9am to 6pm on weekdays. The Calverton branch is open 9am to 5pm on Saturdays. The Calverton branch is closed on Sundays.",
+      "question": "When does the Lowdham branch open on Saturdays?",
+      "answer": "Lowdham branch opens at 9am on Saturdays.",
+      "answer_start": 67
+    },
+    {
+      "context": "Our branch in Lowdham is open from 9am to 6pm on weekdays. The Lowdham branch is open 9am to 1pm on Saturdays. The Lowdham branch is closed on Sundays. Our branch in Calverton is open 9am to 6pm on weekdays. The Calverton branch is open 9am to 5pm on Saturdays. The Calverton branch is closed on Sundays.",
+      "question": "What are the weekday opening hours for the Calverton branch?",
+      "answer": "Calverton branch is open from 9am to 6pm on weekdays.",
+      "answer_start": 122
+    },
+    {
+      "context": "Our branch in Lowdham is open from 9am to 6pm on weekdays. The Lowdham branch is open 9am to 1pm on Saturdays. The Lowdham branch is closed on Sundays. Our branch in Calverton is open 9am to 6pm on weekdays. The Calverton branch is open 9am to 5pm on Saturdays. The Calverton branch is closed on Sundays.",
+      "question": "When does the Lowdham branch close on weekdays?",
+      "answer": "Lowdham branch closes at 6pm on weekdays.",
+      "answer_start": 42
+    },
+    {
+      "context": "Our branch in Lowdham is open from 9am to 6pm on weekdays. The Lowdham branch is open 9am to 1pm on Saturdays. The Lowdham branch is closed on Sundays. Our branch in Calverton is open 9am to 6pm on weekdays. The Calverton branch is open 9am to 5pm on Saturdays. The Calverton branch is closed on Sundays.",
+      "question": "What are the Saturday opening hours for the Calverton branch?",
+      "answer": "Calverton branch is open from 9am to 5pm on Saturdays.",
+      "answer_start": 147
+    },
+    {
+        "context": "The Lowdham pharmacy is open from 9:00 AM to 6:00 PM on weekdays. The Lowdham location operates from 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy is closed every Sunday. The Calverton branch is open for business from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "What are the weekday opening hours for the Lowdham pharmacy?",
+        "answer": "Lowdham pharmacy is open from 9:00 AM to 6:00 PM on weekdays.",
+        "answer_start": 4
+      },
+      {
+        "context": "The pharmacy in Lowdham operates from 9:00 AM until 6:00 PM Monday through Friday. The Lowdham location is open 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy is closed every Sunday. The Calverton branch is open from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "When does the Lowdham pharmacy close during the week?",
+        "answer": "Lowdham pharmacy closes at 6:00 PM on weekdays.",
+        "answer_start": 33 
+      },
+      {
+        "context": "The Lowdham pharmacy's hours of operation are 9:00 AM until 6:00 PM on weekdays. The Lowdham location is open 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy is closed on Sundays. The Calverton branch is open from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "What are the Saturday opening hours of the Lowdham location?",
+        "answer": "Lowdham location is open 9:00 AM to 1:00 PM on Saturdays.",
+        "answer_start": 67 
+      },
+      {
+        "context": "The Lowdham pharmacy is open from 9:00 AM until 6:00 PM Monday through Friday. The Lowdham location is open 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy is closed every Sunday. The Calverton branch is open from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "Is the Lowdham pharmacy open on Sunday?",
+        "answer": "No, the Lowdham pharmacy is closed on Sundays.",
+        "answer_start": 98 
+      },
+      {
+        "context": "The Lowdham pharmacy is open from 9:00 AM until 6:00 PM on weekdays. The Lowdham location is open 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy is closed on Sundays. You can visit the Calverton branch from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "What are the weekday opening hours for the Calverton branch?",
+        "answer": "Calverton branch is open from 9:00 AM to 6:00 PM on weekdays.",
+        "answer_start": 122 
+      },
+      {
+        "context": "The Lowdham pharmacy is open from 9:00 AM until 6:00 PM on weekdays. The Lowdham location is open 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy is closed on Sundays. The Calverton branch is open for business from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "When does the Calverton branch open on weekdays?",
+        "answer": "Calverton branch is open from 9:00 AM to 6:00 PM on weekdays.",
+        "answer_start": 122 
+      },
+      {
+        "context": "The Lowdham pharmacy is open from 9:00 AM until 6:00 PM on weekdays. The Lowdham location is open 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy is closed on Sundays. The Calverton branch operates from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "At what time does the Calverton branch close on Saturdays?",
+        "answer": "Calverton branch closes at 5:00 PM on Saturdays.",
+        "answer_start": 161 
+      },
+      {
+        "context": "The Lowdham pharmacy is open from 9:00 AM until 6:00 PM on weekdays. The Lowdham location is open 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy is closed on Sundays. The Calverton branch is open for business from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "What are the Saturday opening hours for the Calverton branch?",
+        "answer": "Calverton branch is open until 5:00 PM on Saturdays.",
+        "answer_start": 147
+      },
+      {
+        "context": "The Lowdham pharmacy is open from 9:00 AM until 6:00 PM on weekdays. The Lowdham location is open 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy is closed on Sundays. The Calverton branch operates from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "Is the Calverton branch open on Sundays?",
+        "answer": "No, the Calverton branch is closed on Sundays.",
+        "answer_start": 176 
+      },
+      {
+        "context": "The Lowdham pharmacy is open from 9:00 AM until 6:00 PM on weekdays. The Lowdham location is open 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy is closed on Sundays. You can visit the Calverton branch from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "Are either of the branches open on Sundays?",
+        "answer": "No, the Lowdham pharmacy is closed on Sundays.",
+        "answer_start": 98 
+      },
+      {
+        "context": "The Lowdham branch is open for business from 9:00 AM to 6:00 PM on weekdays. The Lowdham location operates from 9:00 AM to 1:00 PM on Saturdays. The Lowdham branch is closed each Sunday. The Calverton branch is open from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "What are the weekday opening hours of the Lowdham branch?",
+        "answer": "Lowdham branch is open from 9:00 AM to 6:00 PM on weekdays.",
+        "answer_start": 4
+      },
+      {
+        "context": "The Lowdham branch operates from 9:00 AM until 6:00 PM Monday through Friday. The Lowdham location is open 9:00 AM to 1:00 PM on Saturdays. The Lowdham branch is closed every Sunday. The Calverton branch is open from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "When does the Lowdham branch close during the week?",
+        "answer": "Lowdham branch closes at 6:00 PM on weekdays.",
+        "answer_start": 33
+      },
+      {
+        "context": "The Lowdham branch's hours of operation are 9:00 AM until 6:00 PM on weekdays. The Lowdham location is open 9:00 AM to 1:00 PM on Saturdays. The Lowdham branch is closed on Sundays. The Calverton branch is open from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "What are the Saturday opening hours of the Lowdham location?",
+        "answer": "Lowdham location is open 9:00 AM to 1:00 PM on Saturdays.",
+        "answer_start": 67
+      },
+      {
+        "context": "The Lowdham branch is open from 9:00 AM until 6:00 PM Monday through Friday. The Lowdham location is open 9:00 AM to 1:00 PM on Saturdays. The Lowdham branch is closed every Sunday. The Calverton branch is open from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "Is the Lowdham branch open on Sunday?",
+        "answer": "No, the Lowdham branch is closed on Sundays.",
+        "answer_start": 98 
+      },
+      {
+        "context": "The Lowdham branch is open from 9:00 AM until 6:00 PM on weekdays. The Lowdham location is open 9:00 AM to 1:00 PM on Saturdays. The Lowdham branch is closed on Sundays. You can visit the Calverton branch from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "What are the weekday opening hours for the Calverton branch?",
+        "answer": "Calverton branch is open from 9:00 AM to 6:00 PM on weekdays.",
+        "answer_start": 122
+      },
+      {
+        "context": "The Lowdham branch is open from 9:00 AM until 6:00 PM on weekdays. The Lowdham location is open 9:00 AM to 1:00 PM on Saturdays. The Lowdham branch is closed on Sundays. The Calverton branch is open for business from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "When does the Calverton branch open on weekdays?",
+        "answer": "Calverton branch is open from 9:00 AM to 6:00 PM on weekdays.",
+        "answer_start": 122 
+      },
+      {
+        "context": "The Lowdham branch is open from 9:00 AM until 6:00 PM on weekdays. The Lowdham location is open 9:00 AM to 1:00 PM on Saturdays. The Lowdham branch is closed on Sundays. The Calverton branch operates from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "At what time does the Calverton branch close on Saturdays?",
+        "answer": "Calverton branch closes at 5:00 PM on Saturdays.",
+        "answer_start": 161
+      },
+      {
+        "context": "The Lowdham branch is open from 9:00 AM until 6:00 PM on weekdays. The Lowdham location is open 9:00 AM to 1:00 PM on Saturdays. The Lowdham branch is closed on Sundays. The Calverton branch is open for business from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "What are the Saturday opening hours for the Calverton branch?",
+        "answer": "Calverton branch is open until 5:00 PM on Saturdays.",
+        "answer_start": 147
+      },
+      {
+        "context": "The Lowdham branch is open from 9:00 AM until 6:00 PM on weekdays. The Lowdham location is open 9:00 AM to 1:00 PM on Saturdays. The Lowdham branch is closed on Sundays. You can visit the Calverton branch from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "Is the Calverton branch open on Sundays?",
+        "answer": "No, the Calverton branch is closed on Sundays.",
+        "answer_start": 176 
+      },
+      {
+        "context": "The Lowdham branch is open from 9:00 AM until 6:00 PM on weekdays. The Lowdham location is open 9:00 AM to 1:00 PM on Saturdays. The Lowdham branch is closed on Sundays. The Calverton branch operates from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "Are either of the branches open on Sundays?",
+        "answer": "No, the Lowdham branch is closed on Sundays.",
+        "answer_start": 98 
+      },
+      {
+        "context": "The Lowdham pharmacy is open between 9:00 AM and 6:00 PM on weekdays. The Lowdham location is open from 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy remains closed on Sundays. The Calverton branch operates from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "What are the weekday opening hours for the Lowdham pharmacy?",
+        "answer": "Lowdham pharmacy is open between 9:00 AM and 6:00 PM on weekdays.",
+        "answer_start": 4
+      },
+      {
+        "context": "The Lowdham pharmacy is open between 9:00 AM and 6:00 PM Monday to Friday. The Lowdham location is open from 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy remains closed on Sundays. The Calverton branch operates from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "When does the Lowdham pharmacy close during the week?",
+        "answer": "Lowdham pharmacy closes at 6:00 PM on weekdays.",
+        "answer_start": 33
+      },
+      {
+        "context": "The Lowdham pharmacy is open between 9:00 AM and 6:00 PM on weekdays. The Lowdham location is open from 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy remains closed on Sundays. The Calverton branch is open from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "What are the Saturday opening hours of the Lowdham location?",
+        "answer": "Lowdham location is open from 9:00 AM to 1:00 PM on Saturdays.",
+        "answer_start": 67
+      },
+      {
+        "context": "The Lowdham pharmacy is open between 9:00 AM and 6:00 PM on weekdays. The Lowdham location is open from 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy remains closed on Sundays. The Calverton branch operates from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "Is the Lowdham pharmacy open on Sunday?",
+        "answer": "No, the Lowdham pharmacy is closed on Sundays.",
+        "answer_start": 98 
+      },
+      {
+        "context": "The Lowdham pharmacy is open between 9:00 AM and 6:00 PM on weekdays. The Lowdham location is open from 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy remains closed on Sundays. The Calverton branch is open from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "What are the weekday opening hours for the Calverton branch?",
+        "answer": "Calverton branch is open from 9:00 AM to 6:00 PM on weekdays.",
+        "answer_start": 122
+      },
+      {
+        "context": "The Lowdham pharmacy is open between 9:00 AM and 6:00 PM on weekdays. The Lowdham location is open from 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy remains closed on Sundays. The Calverton branch is open from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "When does the Calverton branch open on weekdays?",
+        "answer": "Calverton branch is open from 9:00 AM to 6:00 PM on weekdays.",
+        "answer_start": 122 
+      },
+      {
+        "context": "The Lowdham pharmacy is open between 9:00 AM and 6:00 PM on weekdays. The Lowdham location is open from 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy remains closed on Sundays. The Calverton branch is open from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "At what time does the Calverton branch close on Saturdays?",
+        "answer": "Calverton branch closes at 5:00 PM on Saturdays.",
+        "answer_start": 161
+      },
+      {
+        "context": "The Lowdham pharmacy is open between 9:00 AM and 6:00 PM on weekdays. The Lowdham location is open from 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy remains closed on Sundays. The Calverton branch is open from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "What are the Saturday opening hours for the Calverton branch?",
+        "answer": "Calverton branch is open until 5:00 PM on Saturdays.",
+        "answer_start": 147 
+      },
+      {
+        "context": "The Lowdham pharmacy is open between 9:00 AM and 6:00 PM on weekdays. The Lowdham location is open from 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy remains closed on Sundays. The Calverton branch is open from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "Is the Calverton branch open on Sundays?",
+        "answer": "No, the Calverton branch is closed on Sundays.",
+        "answer_start": 176 
+      },
+      {
+        "context": "The Lowdham pharmacy is open between 9:00 AM and 6:00 PM on weekdays. The Lowdham location is open from 9:00 AM to 1:00 PM on Saturdays. The Lowdham pharmacy remains closed on Sundays. The Calverton branch is open from 9:00 AM to 6:00 PM on weekdays. The Calverton branch is open until 5:00 PM on Saturdays. The Calverton branch is closed on Sundays.",
+        "question": "Are either of the branches open on Sundays?",
+        "answer": "No, the Lowdham pharmacy is closed on Sundays.",
+        "answer_start": 98 
+      },
+      {
+        "context": "The Lowdham pharmacy operates from 9:00 AM to 6:00 PM on weekdays, and from 9:00 AM to 1:00 PM on Saturdays. They are closed on Sundays. The Calverton branch maintains the same weekday hours, 9:00 AM to 6:00 PM, but closes earlier on Saturdays at 5:00 PM. They are also closed on Sundays.",
+        "question": "What are the weekday opening hours for the Lowdham pharmacy?",
+        "answer": "Lowdham pharmacy operates from 9:00 AM to 6:00 PM on weekdays.",
+        "answer_start": 4
+      },
+      {
+        "context": "The Lowdham pharmacy is open for business from 9:00 AM to 6:00 PM on weekdays, and from 9:00 AM to 1:00 PM on Saturdays. They are closed on Sundays. The Calverton branch maintains the same weekday hours, 9:00 AM to 6:00 PM, but closes earlier on Saturdays at 5:00 PM. They are also closed on Sundays.",
+        "question": "When does the Lowdham pharmacy close during the week?",
+        "answer": "Lowdham pharmacy closes at 6:00 PM on weekdays.",
+        "answer_start": 33
+      },
+      {
+        "context": "The Lowdham pharmacy is open from 9:00 AM to 6:00 PM on weekdays, and from 9:00 AM to 1:00 PM on Saturdays. They are closed on Sundays. The Calverton branch maintains the same weekday hours, 9:00 AM to 6:00 PM, but closes earlier on Saturdays at 5:00 PM. They are also closed on Sundays.",
+        "question": "What are the Saturday opening hours for the Lowdham pharmacy?",
+        "answer": "Lowdham pharmacy is open from 9:00 AM to 1:00 PM on Saturdays.",
+        "answer_start": 67 
+      },
+      {
+        "context": "The Lowdham pharmacy is open from 9:00 AM to 6:00 PM on weekdays, and from 9:00 AM to 1:00 PM on Saturdays. They are closed on Sundays. The Calverton branch maintains the same weekday hours, 9:00 AM to 6:00 PM, but closes earlier on Saturdays at 5:00 PM. They are also closed on Sundays.",
+        "question": "Is the Lowdham pharmacy open on Sunday?",
+        "answer": "No, the Lowdham pharmacy is closed on Sundays.",
+        "answer_start": 98 
+      },
+      {
+        "context": "The Lowdham pharmacy is open from 9:00 AM to 6:00 PM on weekdays, and from 9:00 AM to 1:00 PM on Saturdays. They are closed on Sundays. The Calverton branch maintains the same weekday hours, 9:00 AM to 6:00 PM, but closes earlier on Saturdays at 5:00 PM. They are also closed on Sundays.",
+        "question": "What are the weekday opening hours for the Calverton branch?",
+        "answer": "Calverton branch maintains the same weekday hours, 9:00 AM to 6:00 PM.",
+        "answer_start": 122
+      },
+      {
+        "context": "The Lowdham pharmacy is open from 9:00 AM to 6:00 PM on weekdays, and from 9:00 AM to 1:00 PM on Saturdays. They are closed on Sundays. The Calverton branch maintains the same weekday hours, 9:00 AM to 6:00 PM, but closes earlier on Saturdays at 5:00 PM. They are also closed on Sundays.",
+        "question": "When does the Calverton branch open on weekdays?",
+        "answer": "Calverton branch maintains the same weekday hours, 9:00 AM to 6:00 PM.",
+        "answer_start": 122
+      },
+      {
+        "context": "The Lowdham pharmacy is open from 9:00 AM to 6:00 PM on weekdays, and from 9:00 AM to 1:00 PM on Saturdays. They are closed on Sundays. The Calverton branch maintains the same weekday hours, 9:00 AM to 6:00 PM, but closes earlier on Saturdays at 5:00 PM. They are also closed on Sundays.",
+        "question": "At what time does the Calverton branch close on Saturdays?",
+        "answer": "Calverton branch closes earlier on Saturdays at 5:00 PM.",
+        "answer_start": 161
+      },
+      {
+        "context": "The Lowdham pharmacy is open from 9:00 AM to 6:00 PM on weekdays, and from 9:00 AM to 1:00 PM on Saturdays. They are closed on Sundays. The Calverton branch maintains the same weekday hours, 9:00 AM to 6:00 PM, but closes earlier on Saturdays at 5:00 PM. They are also closed on Sundays.",
+        "question": "What are the Saturday opening hours for the Calverton branch?",
+        "answer": "Calverton branch closes earlier on Saturdays at 5:00 PM.",
+        "answer_start": 147
+      },
+      {
+        "context": "The Lowdham pharmacy is open from 9:00 AM to 6:00 PM on weekdays, and from 9:00 AM to 1:00 PM on Saturdays. They are closed on Sundays. The Calverton branch maintains the same weekday hours, 9:00 AM to 6:00 PM, but closes earlier on Saturdays at 5:00 PM. They are also closed on Sundays.",
+        "question": "Is the Calverton branch open on Sundays?",
+        "answer": "No, the Calverton branch is closed on Sundays.",
+        "answer_start": 176 
+      },
+      {
+        "context": "The Lowdham pharmacy is open from 9:00 AM to 6:00 PM on weekdays, and from 9:00 AM to 1:00 PM on Saturdays. They are closed on Sundays. The Calverton branch maintains the same weekday hours, 9:00 AM to 6:00 PM, but closes earlier on Saturdays at 5:00 PM. They are also closed on Sundays.",
+        "question": "Are either of the branches open on Sundays?",
+        "answer": "No, the Lowdham pharmacy is closed on Sundays.",
+        "answer_start": 98 
+      },
+      {
+        "context": "Lowdham operates Monday to Friday from 9am to 6pm, and on Saturdays from 9am to 1pm. Calverton operates the same hours on weekdays but stays open until 5pm on Saturdays. Both branches are closed on Sundays.",
+        "question": "Are you open on Sundays?",
+        "answer": "Both branches are closed on Sundays.",
+        "answer_start": 146
+      },
+      {
+        "context": "Lowdham is open weekdays from 9am to 6pm and Saturdays from 9am to 1pm. Calverton shares the same weekday schedule but remains open until 5pm on Saturdays. Neither branch is open on Sundays.",
+        "question": "Do you operate on Sundays?",
+        "answer": "Neither branch is open on Sundays.",
+        "answer_start": 146
+      },
+      {
+        "context": "The Lowdham branch operates Monday to Friday from 9am to 6pm, and 9am to 1pm on Saturdays. Calverton follows the same weekday hours but stays open until 5pm on Saturdays. Both branches remain closed on Sundays.",
+        "question": "Can I visit your branches on Sundays?",
+        "answer": "Both branches remain closed on Sundays.",
+        "answer_start": 155
+      },
+      {
+        "context": "From Monday to Friday, Lowdham is open from 9am to 6pm, with Saturday hours from 9am to 1pm. Calverton shares the same weekday schedule but stays open later on Saturdays until 5pm. Both branches are closed Sundays.",
+        "question": "Is Lowdham open on Sundays?",
+        "answer": "Both branches are closed Sundays.",
+        "answer_start": 158
+      },
+      {
+        "context": "Lowdham's hours are 9am to 6pm on weekdays and 9am to 1pm on Saturdays. Calverton also operates 9am to 6pm on weekdays but stays open until 5pm on Saturdays. Sundays are a closed day for both branches.",
+        "question": "Is Calverton open on Sundays?",
+        "answer": "Sundays are a closed day for both branches.",
+        "answer_start": 153
+      },
+      {
+        "context": "Both Lowdham and Calverton are open 9am to 6pm on weekdays. On Saturdays, Lowdham closes at 1pm, while Calverton remains open until 5pm. Sundays are a closed day for both locations.",
+        "question": "Are your pharmacies open on Sundays?",
+        "answer": "Sundays are a closed day for both locations.",
+        "answer_start": 145
+      },
+      {
+        "context": "Lowdham operates weekdays from 9am to 6pm and Saturdays from 9am to 1pm. Calverton follows the same weekday hours but remains open until 5pm on Saturdays. Sundays are closed for both branches.",
+        "question": "Are your branches closed on Sundays?",
+        "answer": "Sundays are closed for both branches.",
+        "answer_start": 146
+      },
+      {
+        "context": "On weekdays, Lowdham operates 9am to 6pm and 9am to 1pm on Saturdays. Calverton shares the same weekday schedule but stays open until 5pm on Saturdays. Neither branch is open on Sundays.",
+        "question": "Is it possible to visit your pharmacies on Sundays?",
+        "answer": "Neither branch is open on Sundays.",
+        "answer_start": 147
+      },
+      {
+        "context": "Lowdham opens at 9am and closes at 6pm Monday through Friday, with Saturday hours from 9am to 1pm. Calverton shares the weekday hours but remains open later on Saturdays until 5pm. Both branches are closed Sundays.",
+        "question": "Are your branches available on Sundays?",
+        "answer": "Both branches are closed Sundays.",
+        "answer_start": 158
+      },
+      {
+        "context": "Lowdham and Calverton operate 9am to 6pm Monday to Friday, with Lowdham closing at 1pm on Saturdays and Calverton staying open until 5pm. Sundays are a closed day for both branches.",
+        "question": "Do your locations stay open on Sundays?",
+        "answer": "Sundays are a closed day for both branches.",
+        "answer_start": 144
+      },
+      {
+        "context": "Lowdham operates Monday to Friday from 9am to 6pm, and on Saturdays from 9am to 1pm. Calverton operates the same hours on weekdays but stays open until 5pm on Saturdays. Both branches are closed on Sundays.",
+        "question": "Are you open on Sundays?",
+        "answer": "Both branches are closed on Sundays.",
+        "answer_start": 146
+      },
+      {
+        "context": "Lowdham is open weekdays from 9am to 6pm and Saturdays from 9am to 1pm. Calverton shares the same weekday schedule but remains open until 5pm on Saturdays. Neither branch is open on Sundays.",
+        "question": "Do you operate on Sundays?",
+        "answer": "Neither branch is open on Sundays.",
+        "answer_start": 146
+      },
+      {
+        "context": "The Lowdham branch operates Monday to Friday from 9am to 6pm, and 9am to 1pm on Saturdays. Calverton follows the same weekday hours but stays open until 5pm on Saturdays. Both branches remain closed on Sundays.",
+        "question": "Can I visit your branches on Sundays?",
+        "answer": "Both branches remain closed on Sundays.",
+        "answer_start": 155
+      },
+      {
+        "context": "From Monday to Friday, Lowdham is open from 9am to 6pm, with Saturday hours from 9am to 1pm. Calverton shares the same weekday schedule but stays open later on Saturdays until 5pm. Both branches are closed Sundays.",
+        "question": "Is Lowdham open on Sundays?",
+        "answer": "Both branches are closed Sundays.",
+        "answer_start": 158
+      },
+      {
+        "context": "Lowdham's hours are 9am to 6pm on weekdays and 9am to 1pm on Saturdays. Calverton also operates 9am to 6pm on weekdays but stays open until 5pm on Saturdays. Sundays are a closed day for both branches.",
+        "question": "Is Calverton open on Sundays?",
+        "answer": "Sundays are a closed day for both branches.",
+        "answer_start": 153
+      },
+      {
+        "context": "Both Lowdham and Calverton are open 9am to 6pm on weekdays. On Saturdays, Lowdham closes at 1pm, while Calverton remains open until 5pm. Sundays are a closed day for both locations.",
+        "question": "Are your pharmacies open on Sundays?",
+        "answer": "Sundays are a closed day for both locations.",
+        "answer_start": 145
+      },
+      {
+        "context": "Lowdham operates weekdays from 9am to 6pm and Saturdays from 9am to 1pm. Calverton follows the same weekday hours but remains open until 5pm on Saturdays. Sundays are closed for both branches.",
+        "question": "Are your branches closed on Sundays?",
+        "answer": "Sundays are closed for both branches.",
+        "answer_start": 146
+      },
+      {
+        "context": "On weekdays, Lowdham operates 9am to 6pm and 9am to 1pm on Saturdays. Calverton shares the same weekday schedule but stays open until 5pm on Saturdays. Neither branch is open on Sundays.",
+        "question": "Is it possible to visit your pharmacies on Sundays?",
+        "answer": "Neither branch is open on Sundays.",
+        "answer_start": 147
+      },
+      {
+        "context": "Lowdham opens at 9am and closes at 6pm Monday through Friday, with Saturday hours from 9am to 1pm. Calverton shares the weekday hours but remains open later on Saturdays until 5pm. Both branches are closed Sundays.",
+        "question": "Are your branches available on Sundays?",
+        "answer": "Both branches are closed Sundays.",
+        "answer_start": 158
+      },
+      {
+        "context": "Lowdham and Calverton operate 9am to 6pm Monday to Friday, with Lowdham closing at 1pm on Saturdays and Calverton staying open until 5pm. Sundays are a closed day for both branches.",
+        "question": "Do your locations stay open on Sundays?",
+        "answer": "Sundays are a closed day for both branches.",
+        "answer_start": 144
+      },
+      {
+        "context": "Today is Monday. Lowdham is open from 9am to 6pm Monday through Friday and from 9am to 1pm on Saturdays. Calverton shares the same weekday hours but stays open until 5pm on Saturdays. Both branches are closed Sundays.",
+        "question": "Is Lowdham open today?",
+        "answer": "Lowdham is open from 9am to 6pm Monday through Friday.",
+        "answer_start": 17
+      },
+      {
+        "context": "Today is Monday. Lowdham is open from 9am to 6pm Monday through Friday and from 9am to 1pm on Saturdays. Calverton shares the same weekday hours but stays open until 5pm on Saturdays. Both branches are closed Sundays.",
+        "question": "Is Calverton open today?",
+        "answer": "Calverton shares the same weekday hours but stays open until 5pm on Saturdays.",
+        "answer_start": 112
+      },
+      {
+        "context": "Today is Saturday. Lowdham is open from 9am to 6pm Monday through Friday and from 9am to 1pm on Saturdays. Calverton shares the same weekday hours but stays open until 5pm on Saturdays. Both branches are closed Sundays.",
+        "question": "What time does Lowdham close today?",
+        "answer": "Lowdham is open from 9am to 1pm on Saturdays.",
+        "answer_start": 73
+      },
+      {
+        "context": "Today is Saturday. Lowdham is open from 9am to 6pm Monday through Friday and from 9am to 1pm on Saturdays. Calverton shares the same weekday hours but stays open until 5pm on Saturdays. Both branches are closed Sundays.",
+        "question": "What time does Calverton close today?",
+        "answer": "Calverton shares the same weekday hours but stays open until 5pm on Saturdays.",
+        "answer_start": 112
+      },
+      {
+        "context": "Today is Sunday. Lowdham is open from 9am to 6pm Monday through Friday and from 9am to 1pm on Saturdays. Calverton shares the same weekday hours but stays open until 5pm on Saturdays. Both branches are closed Sundays.",
+        "question": "Can I visit Lowdham today?",
+        "answer": "Both branches are closed Sundays.",
+        "answer_start": 172
+      },
+      {
+        "context": "Today is Sunday. Lowdham is open from 9am to 6pm Monday through Friday and from 9am to 1pm on Saturdays. Calverton shares the same weekday hours but stays open until 5pm on Saturdays. Both branches are closed Sundays.",
+        "question": "Is Calverton open today?",
+        "answer": "Both branches are closed Sundays.",
+        "answer_start": 172
+      },
+      {
+        "context": "Today is Wednesday. Lowdham is open from 9am to 6pm Monday through Friday and from 9am to 1pm on Saturdays. Calverton shares the same weekday hours but stays open until 5pm on Saturdays. Both branches are closed Sundays.",
+        "question": "Is Lowdham closed today?",
+        "answer": "Lowdham is open from 9am to 6pm Monday through Friday.",
+        "answer_start": 17
+      },
+      {
+        "context": "Today is Wednesday. Lowdham is open from 9am to 6pm Monday through Friday and from 9am to 1pm on Saturdays. Calverton shares the same weekday hours but stays open until 5pm on Saturdays. Both branches are closed Sundays.",
+        "question": "Is Calverton closed today?",
+        "answer": "Calverton shares the same weekday hours but stays open until 5pm on Saturdays.",
+        "answer_start": 112
+      },
+      {
+        "context": "Today is Friday. Lowdham is open from 9am to 6pm Monday through Friday and from 9am to 1pm on Saturdays. Calverton shares the same weekday hours but stays open until 5pm on Saturdays. Both branches are closed Sundays.",
+        "question": "Is Lowdham open this morning?",
+        "answer": "Lowdham is open from 9am to 6pm Monday through Friday.",
+        "answer_start": 17
+      },
+      {
+        "context": "Today is Friday. Lowdham is open from 9am to 6pm Monday through Friday and from 9am to 1pm on Saturdays. Calverton shares the same weekday hours but stays open until 5pm on Saturdays. Both branches are closed Sundays.",
+        "question": "Is Calverton open this morning?",
+        "answer": "Calverton shares the same weekday hours but stays open until 5pm on Saturdays.",
+        "answer_start": 112
+      },
+      {
+        "context": "Lowdham is open from 9am to 6pm Monday through Friday and from 9am to 1pm on Saturdays. Calverton shares the same weekday hours but stays open until 5pm on Saturdays. Both branches are closed Sundays.",
+        "question": "Is Lowdham open on Monday?",
+        "answer": "Lowdham is open from 9am to 6pm Monday through Friday.",
+        "answer_start": 14
+      },
+      {
+        "context": "Lowdham is open from 9am to 6pm Monday through Friday and from 9am to 1pm on Saturdays. Calverton shares the same weekday hours but stays open until 5pm on Saturdays. Both branches are closed Sundays.",
+        "question": "What time does Calverton close on Tuesday?",
+        "answer": "Calverton shares the same weekday hours but stays open until 5pm on Saturdays.",
+        "answer_start": 95
+      },
+      {
+        "context": "Lowdham pharmacy operates from 9am to 6pm on weekdays and 9am to 1pm on Saturdays. Calverton follows the same schedule but stays open until 5pm on Saturdays. Both locations are closed on Sundays.",
+        "question": "Is Lowdham open on Thursday?",
+        "answer": "Lowdham pharmacy operates from 9am to 6pm on weekdays.",
+        "answer_start": 0
+      },
+      {
+        "context": "Lowdham operates Monday through Friday from 9am to 6pm and from 9am to 1pm on Saturdays. Calverton is open during the same weekday hours but stays open later on Saturdays until 5pm. Both pharmacies remain closed on Sundays.",
+        "question": "Is Calverton open on Wednesday?",
+        "answer": "Calverton is open during the same weekday hours but stays open later on Saturdays until 5pm.",
+        "answer_start": 83
+      },
+      {
+        "context": "Lowdham's hours of operation are 9am to 6pm Monday through Friday and 9am to 1pm on Saturdays. Calverton has the same weekday schedule but extends its hours until 5pm on Saturdays. Sundays remain a closed day for both locations.",
+        "question": "Is Lowdham open on a Friday afternoon?",
+        "answer": "Lowdham's hours of operation are 9am to 6pm Monday through Friday.",
+        "answer_start": 0
+      },
+      {
+        "context": "The opening hours for Lowdham are 9am to 6pm on weekdays and 9am to 1pm on Saturdays. Calverton follows the same weekday schedule but stays open until 5pm on Saturdays. Both locations are closed on Sundays.",
+        "question": "What time does Calverton close on Saturday?",
+        "answer": "Calverton follows the same weekday schedule but stays open until 5pm on Saturdays.",
+        "answer_start": 80
+      },
+      {
+        "context": "Lowdham is open from 9am to 6pm on weekdays and from 9am to 1pm on Saturdays. Calverton shares the same weekday hours but remains open until 5pm on Saturdays. Both pharmacies are closed on Sundays.",
+        "question": "Is Calverton open on Sunday?",
+        "answer": "Both pharmacies are closed on Sundays.",
+        "answer_start": 120
+      },
+      {
+        "context": "Lowdham operates from 9am to 6pm Monday through Friday and 9am to 1pm on Saturdays. Calverton follows the same weekday schedule but remains open until 5pm on Saturdays. Sundays are non-operational for both locations.",
+        "question": "Can I visit Lowdham on Saturday evening?",
+        "answer": "Lowdham operates from 9am to 1pm on Saturdays.",
+        "answer_start": 44
+      },
+      {
+        "context": "The pharmacy in Lowdham is open from 9am to 6pm Monday through Friday and 9am to 1pm on Saturdays. The Calverton branch follows the same weekday schedule but extends its Saturday hours until 5pm. Both locations are closed Sundays.",
+        "question": "What time does Lowdham open on a Tuesday?",
+        "answer": "The pharmacy in Lowdham is open from 9am to 6pm Monday through Friday.",
+        "answer_start": 4
+      },
+      {
+        "context": "Lowdham's pharmacy hours are 9am to 6pm Monday through Friday and 9am to 1pm on Saturdays. Calverton shares the same weekday hours but stays open until 5pm on Saturdays. Both pharmacies are not open on Sundays.",
+        "question": "Can I get a prescription from Calverton on Sunday?",
+        "answer": "Both pharmacies are not open on Sundays.",
+        "answer_start": 113
+      },
+      {
+        "context": "User: What time does Lowdham close? Assistant: Lowdham closes at 6pm on weekdays and 1pm on Saturdays. Calverton closes at 6pm on weekdays and 5pm on Saturdays.",
+        "question": "And what about Calverton?",
+        "answer": "Calverton closes at 6pm on weekdays and 5pm on Saturdays.",
+        "answer_start": 72
+      },
+      {
+        "context": "User: What are the hours for Lowdham pharmacy? Assistant: Lowdham is open from 9am to 6pm Monday through Friday and from 9am to 1pm on Saturdays. Calverton is open from 9am to 6pm on weekdays and until 5pm on Saturdays.",
+        "question": "Is it the same for Calverton?",
+        "answer": "Calverton is open from 9am to 6pm on weekdays and until 5pm on Saturdays.",
+        "answer_start": 107
+      },
+      {
+        "context": "User: When can I visit Lowdham? Assistant: Lowdham is open from 9am to 6pm on weekdays and from 9am to 1pm on Saturdays. Both branches are closed on Sundays.",
+        "question": "What about Sundays?",
+        "answer": "Both branches are closed on Sundays.",
+        "answer_start": 102
+      },
+      {
+        "context": "User: What time does the pharmacy open? Assistant: Both Lowdham and Calverton open at 9am on weekdays. Lowdham closes at 1pm on Saturdays, and Calverton stays open until 5pm. Both are closed on Sundays.",
+        "question": "Are there different hours on the weekend?",
+        "answer": "Lowdham closes at 1pm on Saturdays, and Calverton stays open until 5pm. Both are closed on Sundays.",
+        "answer_start": 81
+      },
+      {
+        "context": "User: Can I get my prescription on a Sunday? Assistant: The pharmacy is closed on Sundays. Lowdham closes at 1pm on Saturdays, and Calverton stays open until 5pm.",
+        "question": "What about Saturday?",
+        "answer": "Lowdham closes at 1pm on Saturdays, and Calverton stays open until 5pm.",
+        "answer_start": 59
+      },
+      {
+        "context": "User: I need to pick up my prescription. Assistant: The pharmacy is open from 9am to 6pm on weekdays. Lowdham closes at 1pm on Saturdays, and Calverton stays open until 5pm. Both are closed on Sundays.",
+        "question": "Is it open late on weekends?",
+        "answer": "Lowdham closes at 1pm on Saturdays, and Calverton stays open until 5pm. Both are closed on Sundays.",
+        "answer_start": 71
+      },
+      {
+        "context": "User: What time do you close? Assistant: The pharmacy closes at 6pm on weekdays. Lowdham closes at 1pm on Saturdays, and Calverton stays open until 5pm.",
+        "question": "How about on Saturdays?",
+        "answer": "Lowdham closes at 1pm on Saturdays, and Calverton stays open until 5pm.",
+        "answer_start": 62
+      },
+      {
+        "context": "User: When is Calverton open? Assistant: Calverton is open from 9am to 6pm on weekdays and from 9am to 5pm on Saturdays. Lowdham is open from 9am to 6pm on weekdays and from 9am to 1pm on Saturdays.",
+        "question": "What about Lowdham?",
+        "answer": "Lowdham is open from 9am to 6pm on weekdays and from 9am to 1pm on Saturdays.",
+        "answer_start": 103
+      },
+      {
+        "context": "User: Are you open on weekends? Assistant: We are open on Saturdays but closed on Sundays. Lowdham closes at 1pm, and Calverton stays open until 5pm.",
+        "question": "Until what time on Saturdays?",
+        "answer": "Lowdham closes at 1pm, and Calverton stays open until 5pm.",
+        "answer_start": 61
+      },
+      {
+        "context": "User: What time does Lowdham open? Assistant: Lowdham opens at 9am on weekdays and Saturdays. Calverton also opens at 9am on weekdays and Saturdays.",
+        "question": "And Calverton?",
+        "answer": "Calverton also opens at 9am on weekdays and Saturdays.",
+        "answer_start": 70
+      }
+  ]

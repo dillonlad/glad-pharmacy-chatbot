@@ -1,0 +1,5 @@
+transformers==4.48.1
+torch==2.5.1
+boto3==1.35.98
+datasets==3.2.0
+accelerate==1.3.0

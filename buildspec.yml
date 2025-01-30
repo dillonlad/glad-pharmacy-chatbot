@@ -6,9 +6,8 @@ phases:
       python: 3.12
     commands:
       - pip install -r requirements.txt
-      - curl -s https://amazon-eb-cli.s3.amazonaws.com/aws-eb-cli-linux-x86_64.zip -o /tmp/eb.zip
-      - unzip /tmp/eb.zip -d /tmp
-      - sudo mv /tmp/eb*/eb /usr/local/bin/eb
+      # Install Elastic Beanstalk CLI
+      - curl -sL https://github.com/aws/aws-elastic-beanstalk-cli-setup/raw/master/scripts/install.sh | sudo bash
   build:
     commands:
       - echo "Building project..."

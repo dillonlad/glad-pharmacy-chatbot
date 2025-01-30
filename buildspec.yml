@@ -6,6 +6,9 @@ phases:
       python: 3.12
     commands:
       - pip install -r requirements.txt
+      - curl -s https://amazon-eb-cli.s3.amazonaws.com/aws-eb-cli-linux-x86_64.zip -o /tmp/eb.zip
+      - unzip /tmp/eb.zip -d /tmp
+      - sudo mv /tmp/eb*/eb /usr/local/bin/eb
   build:
     commands:
       - echo "Building project..."

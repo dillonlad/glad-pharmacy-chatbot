@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.12
+    commands:
+      - pip install -r requirements.txt
+  build:
+    commands:
+      - echo "Building project..."
+  post_build:
+    commands:
+      - echo "Deploying to Elastic Beanstalk..."
+      - eb init -p python-3.12 gladbot-fastapi-app --region $AWS_REGION
+      - eb deploy

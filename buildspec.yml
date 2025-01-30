@@ -14,3 +14,8 @@ phases:
       - echo "Deploying to Elastic Beanstalk..."
       - eb init -p python-3.12 GladPharmacyBot --region $AWS_REGION
       - eb deploy
+
+eb_codebuild_settings:
+  environment_name: GladPharmacyBot-env
+  application_name: GladPharmacyBot
+  region: $AWS_REGION

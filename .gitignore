@@ -3,3 +3,7 @@
 /s3_chatbot_model
 /__pycache__
 /.venv
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

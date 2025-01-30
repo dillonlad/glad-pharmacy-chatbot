@@ -19,5 +19,3 @@ eb_codebuild_settings:
   environment_name: GladPharmacyBot-env
   application_name: GladPharmacyBot
   region: $AWS_REGION
-
-service-role: arn:aws:iam::891377124166:role/service-role/gladbot-codebuild

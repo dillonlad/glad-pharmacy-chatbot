@@ -1,4 +1,5 @@
-fastapi
-uvicorn
-transformers
-torch
+fastapi==0.115.7
+uvicorn==0.34.0
+transformers==4.48.1
+torch==2.5.1
+awsebcli==3.21.0

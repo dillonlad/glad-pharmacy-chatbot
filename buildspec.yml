@@ -6,39 +6,21 @@ phases:
       python: 3.12
     commands:
       - echo "Installing dependencies..."
-      - pip install --upgrade pip
       - pip install --upgrade awscli  # Ensure AWS CLI is up to date
   pre_build:
     commands:
-      - echo "Setting up environment variables..."
-      - export EB_BUCKET=elasticbeanstalk-eu-west-2-891377124166  # Replace with your S3 bucket
-      - export APP_NAME=GladPharmacyBot  # Replace with your Elastic Beanstalk app name
-      - export ENV_NAME=GladPharmacyBot-env  # Replace with your Elastic Beanstalk environment name
-      - export VERSION_LABEL=$(date +%Y%m%d%H%M%S)  # Timestamped version label
+      - echo "Logging in to Amazon ECR..."
+      - $(aws ecr get-login --no-include-email --region eu-west-2)
+      - REPO_NAME=GladPharmacyBot-Base
+      - IMAGE_TAG=$(date +%Y%m%d%H%M%S)
   build:
     commands:
-      - echo "Installing application dependencies..."
-      - pip install -r requirements.txt -t .
-      - echo "Packaging FastAPI application..."
-      - zip -r application.zip * .[^.]*  # Include all files
+      - echo "Building Docker image..."
+      - docker build -t $REPO_NAME:$IMAGE_TAG .
+      - docker tag $REPO_NAME:$IMAGE_TAG 891377124166.dkr.ecr.eu-west-2.amazonaws.com/$REPO_NAME:$IMAGE_TAG
   post_build:
     commands:
-      - echo "Uploading application package to S3..."
-      - aws s3 cp application.zip s3://$EB_BUCKET/application.zip
-      - echo "Creating new Elastic Beanstalk application version..."
-      - aws elasticbeanstalk create-application-version --application-name $APP_NAME --version-label $VERSION_LABEL --source-bundle S3Bucket=$EB_BUCKET,S3Key=application.zip
-      - echo "Deploying new version to Elastic Beanstalk..."
-      - aws elasticbeanstalk update-environment --application-name $APP_NAME --environment-name $ENV_NAME --version-label $VERSION_LABEL
-
-artifacts:
-  files:
-    - application.zip
-
-eb_codebuild_settings:
-  CodeBuildServiceRole: arn:aws:iam::891377124166:role/gladbot-code-build-2
-  ComputeType: BUILD_GENERAL1_LARGE
-  Image: aws/codebuild/amazonlinux-x86_64-standard:5.0
-  Timeout: 15 
-  environment_name: GladPharmacyBot-env
-  application_name: GladPharmacyBot
-  region: $AWS_REGION
+      - echo "Pushing Docker image to ECR..."
+      - docker push 891377124166.dkr.ecr.eu-west-2.amazonaws.com/$REPO_NAME:$IMAGE_TAG
+      - echo "Updating Elastic Beanstalk with new image..."
+      - aws elasticbeanstalk update-environment --application-name GladPharmacyBot --environment-name GladPharmacyBot-env --version-label $IMAGE_TAG --option-settings Namespace=aws:elasticbeanstalk:container:docker,OptionName=ImageUrl,Value=891377124166.dkr.ecr.eu-west-2.amazonaws.com/$REPO_NAME:$IMAGE_TAG

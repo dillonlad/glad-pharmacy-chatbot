@@ -8,7 +8,7 @@ phases:
       - echo "Installing dependencies..."
       - pip install --upgrade pip
       - pip install --upgrade awscli  # Ensure AWS CLI is up to date
-  pre-build:
+  pre_build:
     commands:
       - echo "Setting up environment variables..."
       - export EB_BUCKET=elasticbeanstalk-eu-west-2-891377124166  # Replace with your S3 bucket
@@ -33,7 +33,7 @@ phases:
 artifacts:
   files:
     - application.zip
-    
+
 eb_codebuild_settings:
   CodeBuildServiceRole: arn:aws:iam::891377124166:role/gladbot-code-build-2
   ComputeType: BUILD_GENERAL1_LARGE

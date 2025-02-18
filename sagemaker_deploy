@@ -1,0 +1,27 @@
+import sagemaker
+from sagemaker.huggingface import HuggingFaceModel
+
+if __name__ == "__main__":
+
+    # Set SageMaker session & role
+    sagemaker_session = sagemaker.Session()
+    role = "arn:aws:iam::891377124166:role/service-role/AmazonSageMaker-ExecutionRole-20250125T143591"
+
+    print("Reading S3...")
+    # Define Hugging Face model parameters
+    huggingface_model = HuggingFaceModel(
+        model_data="s3://gladbot-model/v1/model.tar.gz",  # Model stored in S3
+        role=role,
+        pytorch_version="2.1.0",
+        transformers_version="4.37",
+        py_version="py310",
+    )
+
+    print("Deploying model...")
+    # Deploy model as a real-time SageMaker endpoint
+    predictor = huggingface_model.deploy(
+        initial_instance_count=1, 
+        instance_type="ml.m5.large"  # Choose CPU instance
+    )
+
+    print("Model deployed")

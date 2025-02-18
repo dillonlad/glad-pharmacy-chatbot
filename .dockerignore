@@ -3,8 +3,10 @@
 /s3_chatbot_model
 /__pycache__
 /.venv
-/.vscode
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+/fine_tuning
+model.tar.gz
+/.vscode

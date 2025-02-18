@@ -1,0 +1,26 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.12
+    commands:
+      - echo "Installing dependencies..."
+      - pip install --upgrade awscli  # Ensure AWS CLI is up to date
+  pre_build:
+    commands:
+      - echo "Logging in to Amazon ECR..."
+      - $(aws ecr get-login --no-include-email --region eu-west-2)
+      - REPO_NAME=GladPharmacyBot-Base
+      - IMAGE_TAG=$(date +%Y%m%d%H%M%S)
+  build:
+    commands:
+      - echo "Building Docker image..."
+      - docker build -t $REPO_NAME:$IMAGE_TAG .
+      - docker tag $REPO_NAME:$IMAGE_TAG 891377124166.dkr.ecr.eu-west-2.amazonaws.com/$REPO_NAME:$IMAGE_TAG
+  post_build:
+    commands:
+      - echo "Pushing Docker image to ECR..."
+      - docker push 891377124166.dkr.ecr.eu-west-2.amazonaws.com/$REPO_NAME:$IMAGE_TAG
+      - echo "Updating Elastic Beanstalk with new image..."
+      - aws elasticbeanstalk update-environment --application-name GladPharmacyBot --environment-name GladPharmacyBot-env --version-label $IMAGE_TAG --option-settings Namespace=aws:elasticbeanstalk:container:docker,OptionName=ImageUrl,Value=891377124166.dkr.ecr.eu-west-2.amazonaws.com/$REPO_NAME:$IMAGE_TAG

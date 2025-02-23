@@ -7,6 +7,8 @@ from config import get_config
 from routers.chatbot.api_router import router as chatbot_router
 from routers.orders.api_router import router as orders_router
 from routers.updates.api_router import router as updates_router
+from routers.whatsapp.api_router import router as whatsapp_router
+
 
 from pydantic import BaseModel
 
@@ -58,6 +60,7 @@ def create_app(logger: Logger = None) -> FastAPI:
     app.include_router(chatbot_router)
     app.include_router(updates_router)
     app.include_router(orders_router)
+    app.include_router(whatsapp_router)
 
     # Set CORS access (Allows access from a front-end hosted on a separate domain)
     app.add_middleware(

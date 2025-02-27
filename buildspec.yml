@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     AWS_REGION: "eu-west-2"  # Change to your AWS region
-    ECR_REPO: "891377124166.dkr.ecr.eu-west-2.amazonaws.com/gladbot_api_codepipeline_test"  # Change this
+    ECR_REPO: "891377124166.dkr.ecr.eu-west-2.amazonaws.com"  # Change this
     ECS_CLUSTER: "gladbot-model"  # Change to your ECS cluster name
     ECS_SERVICE: "gladbot-fastapi"  # Change to your ECS service name
     CONTAINER_NAME: "gladbot-api"  # Change to your ECS container name

@@ -19,6 +19,6 @@ phases:
     commands:
       - echo "Building Docker images..."
       - docker build -t api:$CODEBUILD_RESOLVED_SOURCE_VERSION .;
-      - docker tag api:$CODEBUILD_RESOLVED_SOURCE_VERSION $ECR_REPO/gladbot_api_codepipeline_test:latest;
-      - docker push $ECR_REPO/gladbot_api_codepipeline_test:latest;
+      - docker tag api:$CODEBUILD_RESOLVED_SOURCE_VERSION $ECR_REPO/gladbot_api:latest;
+      - docker push $ECR_REPO/gladbot_api:latest;
 

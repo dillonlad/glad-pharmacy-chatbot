@@ -2,46 +2,23 @@ version: 0.2
 
 env:
   variables:
-    BASE_REPO_NAME: "gladbot_api_base"
-    REPO_NAME: "gladbot_api"  # Change this to your actual repository name
-    IMAGE_TAG: "latest"
-    AWS_REGION: "eu-west-2"  # Change to your region
+    AWS_REGION: "eu-west-2"  # Change to your AWS region
+    ECR_REPO: "891377124166.dkr.ecr.eu-west-2.amazonaws.com"  # Change this
     ECS_CLUSTER: "gladbot-model"  # Change to your ECS cluster name
     ECS_SERVICE: "gladbot-fastapi"  # Change to your ECS service name
     CONTAINER_NAME: "gladbot-api"  # Change to your ECS container name
-    ECR_REPO: "891377124166.dkr.ecr.eu-west-2.amazonaws.com"  # Replace with your actual ECR repository
 
 phases:
-  install:
-    runtime-versions:
-      docker: latest
+
   pre_build:
     commands:
       - echo "Logging in to Amazon ECR..."
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO
-      - echo "Checking the source branch..."
-      - PR_BASE_REF=$(git log -1 --pretty=%B | grep -o 'base/[^ ]*' || echo "")
 
   build:
     commands:
       - echo "Building Docker images..."
-      - if [[ -n "$PR_BASE_REF" ]]; then
-          echo "Building base image...";
-          docker build -t $BASE_REPO_NAME:$IMAGE_TAG -f base_Dockerfile .;
-          docker tag $BASE_REPO_NAME:$IMAGE_TAG $ECR_REPO/$BASE_REPO_NAME:$IMAGE_TAG;
-          docker push $ECR_REPO/$BASE_REPO_NAME:$IMAGE_TAG;
-        fi
-      - echo "Building API image...";
-      - docker build -t $REPO_NAME:$IMAGE_TAG -f api_Dockerfile .;
-      - docker tag $REPO_NAME:$IMAGE_TAG $ECR_REPO/$REPO_NAME:$IMAGE_TAG;
-      - docker push $ECR_REPO/$REPO_NAME:$IMAGE_TAG;
+      - docker build -t api:$CODEBUILD_RESOLVED_SOURCE_VERSION .;
+      - docker tag api:$CODEBUILD_RESOLVED_SOURCE_VERSION $ECR_REPO/gladbot_api:latest;
+      - docker push $ECR_REPO/gladbot_api:latest;
 
-  post_build:
-    commands:
-      - echo "Updating ECS service..."
-      - aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --force-new-deployment
-      - echo "Deployment triggered successfully!"
-
-artifacts:
-  files:
-    - "**/*"

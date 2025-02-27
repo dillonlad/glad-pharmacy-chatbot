@@ -24,12 +24,21 @@ class DBHandler:
         self._conn = mysql.connector.connect(**self._settings.model_dump())
         self._cursor = self._conn.cursor(dictionary=True)
     
-    def execute(self, stmnt: str):
+    def execute(self, stmnt: str, commit=False):
         self._cursor.execute(stmnt)
+        if commit is True:
+            self.commit()
+
+    def commit(self):
+        self._conn.commit()
 
     def fetchall(self, stmnt: str):
         self._cursor.execute(stmnt)
         return self._cursor.fetchall()
+    
+    def fetchone(self, stmnt: str):
+        self._cursor.execute(stmnt)
+        return self._cursor.fetchone()
     
     def end_session(self):
         self._cursor.close()

@@ -1,18 +1,8 @@
 from pydantic import BaseModel
 from typing import Optional, List
-
-class ItemOut(BaseModel):
-    item_name: str
-    item_sku: int
-    quantity: int
-
-class OrderUpdateOut(BaseModel):
-    id: int
-    amount_paid: float
-    address: str
-    name: str
-    email: Optional[str]
-    items: list[ItemOut]
+from data_structures import OrderUpdateOut
 
 class UpdatesOut(BaseModel):
+
     orders: List[OrderUpdateOut]
+    unread_whatsapps: int = 0

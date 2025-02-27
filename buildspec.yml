@@ -9,11 +9,6 @@ env:
     CONTAINER_NAME: "gladbot-api"  # Change to your ECS container name
 
 phases:
-  install:
-    commands:
-      - echo "Installing dependencies..."
-      - yum update -y
-      - yum install -y jq
 
   pre_build:
     commands:

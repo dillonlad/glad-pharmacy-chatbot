@@ -1,5 +1,31 @@
 from pydantic import BaseModel
+from typing import Optional, Union
+from datetime import datetime, date, time
 
 class MessageRequest(BaseModel):
-    phone_number: str
+    type: str = "text"
     message: str
+
+class ChannelOut(BaseModel):
+
+    id: int
+    avatarUrl: str = "https://www.svgrepo.com/show/535711/user.svg"
+    title: str
+    subtitle: str
+    date: Optional[Union[date, time, datetime]]
+    unread: bool
+
+class ChannelsOut(BaseModel):
+
+    channels: list[ChannelOut]
+
+class MessageOut(BaseModel):
+
+    id: int
+    type: str
+    message: str
+    isMe: bool
+
+class MessagesOut(BaseModel):
+
+    messages: list[MessageOut]

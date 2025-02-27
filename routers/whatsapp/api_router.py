@@ -2,48 +2,61 @@ from fastapi import APIRouter, Depends
 import base64
 import json
 
-from routers.whatsapp.data_structures import MessageRequest
+from routers.whatsapp.data_structures import MessageRequest, ChannelsOut, MessagesOut
 from auth import verify_token
 from whatsapp_client import WhatsAppClient
 from wp_db_handler import DBHandler
-import boto3
-
-# Initialize the AWS client for End User Messaging Social
-client = boto3.client('socialmessaging')
 
 router = APIRouter(prefix="/whatsapp")
 
 
-@router.get("/get-channels/")
+@router.get("/get-channels/", response_model=ChannelsOut)
 async def get_channels(user=Depends(verify_token)):
+    """
+    Get a list of conversations and their latest messages
+    """
     db_handler = DBHandler()
     db_handler.start_session()
 
     whatsapp_client = WhatsAppClient(db_handler)
+    channels = whatsapp_client.get_channels()
     db_handler.end_session()
-    return whatsapp_client.get_channels()
+
+    return channels
 
 
-@router.post("/send-message/")
+@router.get("/conversation/{id}/", response_model=MessagesOut)
+async def get_conversation(id: int, user=Depends(verify_token)):
+    """
+    Get a list of messages in a converation.
+    """
+
+    db_handler = DBHandler()
+    db_handler.start_session()
+
+    whatsapp_client = WhatsAppClient(db_handler)
+    messages = whatsapp_client.get_conversation(id)
+    db_handler.end_session()
+
+    return messages
+
+
+
+@router.post("/send-message/{id}/", response_model=MessagesOut)
 async def send_message(
+    id: int,
     request: MessageRequest,
     user=Depends(verify_token)
 ):
-    # Construct the message payload
-    message_payload = {
-        "messaging_product": "whatsapp",
-        "to": request.phone_number,
-        "type": "text",
-        "text": {"body": request.message}
-    }
+    """
+    Send an individual whatsapp message.
+    """
+
+    db_handler = DBHandler()
+    db_handler.start_session()
+
+    whatsapp_client = WhatsAppClient(db_handler)
+    updated_messages = whatsapp_client.send_message(id, request.type, request.message)
+    db_handler.end_session()
     
-    # Encode the message payload to base64
-    encoded_message = json.dumps(message_payload).encode()
-    # Send the message using AWS End User Messaging Social
-    response = client.send_whatsapp_message(
-        message=encoded_message,
-        originationPhoneNumberId='phone-number-id-ebd337836e614bd89ad52c6626538a58',
-        metaApiVersion='v20.0'
-    )
-    
-    return response
+    return updated_messages

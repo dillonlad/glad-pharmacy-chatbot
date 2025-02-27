@@ -5,6 +5,7 @@ import pymysql
 from db_client import get_db_connection
 from kms_client import encrypt_message
 import traceback
+import mimetypes
 
 S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
 ORIGINATION_PHONE_NUMBER_ID = os.getenv("ORIGINATION_PHONE_NUMBER_ID")
@@ -37,6 +38,7 @@ def lambda_handler(event, context):
             cursor.execute("SELECT id FROM conversations WHERE phone_number = %s", (phone_number,))
             conversation = cursor.fetchone()
 
+            new_convo = False
             if not conversation:
                 print("Adding new conversation.")
                 # 2️⃣ If not found, create a new conversation
@@ -46,6 +48,7 @@ def lambda_handler(event, context):
                 )
                 connection.commit()
                 conversation_id = cursor.lastrowid
+                new_convo = True
             else:
                 print("Using existing conersation.")
                 conversation_id = conversation["id"]
@@ -74,8 +77,9 @@ def lambda_handler(event, context):
                 # If it's a document, get the filename extension
                 if message_type == "document":
                     file_extension = os.path.splitext(message["document"]["filename"])[-1]
-
-                s3_key = f"whatsapp-media/{message_type}/{media_id}{file_extension}"
+                    s3_key = f"whatsapp-media/{message_type}/{media_id}{file_extension}"
+                else:
+                    s3_key = f"whatsapp-media/{message_type}/"
 
                 # Retrieve media from WhatsApp and store in S3 using AWS End User Messaging Social
                 response = social_messaging_client.get_whatsapp_message_media(
@@ -87,11 +91,20 @@ def lambda_handler(event, context):
                     }
                 )
 
+                print(response)
+
+                if message_type != "document":
+                    # For other media types, try to get the file extension from the MIME type.
+                    mime_type = message[message_type].get("mime_type")
+                    if mime_type:
+                        # Guess the extension based on the MIME type (returns something like ".jpg")
+                        file_extension = mimetypes.guess_extension(mime_type) or ""
+
                 # Construct the S3 URL
-                s3_url = f"https://{S3_BUCKET_NAME}.s3.amazonaws.com/{s3_key}"
+                fp = f"{s3_key}{media_id}{file_extension}"
 
                 metadata = json.dumps({
-                    "media_url": s3_url
+                    "fp": fp
                 })
 
                 caption = message.get(message_type, {}).get("caption", "")
@@ -103,6 +116,11 @@ def lambda_handler(event, context):
                     "INSERT INTO messages (conversation_id, type, message, metadata) VALUES (%s, %s, %s, %s)",
                     (conversation_id, message_type, caption, metadata)
                 )
+
+                if new_convo is False:
+                    cursor.execute(
+                        "UPDATE conversations set `read`=0 where id = %s", (conversation_id)
+                    )
 
                 connection.commit()
                 

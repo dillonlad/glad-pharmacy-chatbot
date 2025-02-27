@@ -32,6 +32,26 @@ class WhatsAppClient:
         self._socialmessaging_client = boto3.client('socialmessaging')
         self._logger = getLogger("fastapi")
 
+    def send_first_template_message(self, recipient):
+        
+        self._logger.info("Sending first template message to user.")
+        # Construct the message payload
+        message_payload = {
+            "messaging_product": "whatsapp",
+            "to": f"+{recipient}",
+            "type": "template",
+            "template": {"language": {"code": "en"}, "name": "first_message"}
+        }
+        # Encode the message payload to base64
+        encoded_message = json.dumps(message_payload).encode()
+        # Send the message using AWS End User Messaging Social
+        response = self._socialmessaging_client.send_whatsapp_message(
+            message=encoded_message,
+            originationPhoneNumberId=self._settings.phone_number_id,
+            metaApiVersion=self._settings.meta_api_version
+        )
+        return response
+
     def send_message(
             self, 
             conversation_id,
@@ -190,6 +210,7 @@ class WhatsAppClient:
                     self._db_handler._conn.commit()
                     conversation_id = cursor.lastrowid
                     new_convo = True
+                    self.send_first_template_message(phone_number)
                 else:
                     self._logger.debug("Using existing conersation.")
                     conversation_id = conversation["id"]
@@ -205,6 +226,10 @@ class WhatsAppClient:
                         "INSERT INTO messages (conversation_id, message, sns_message_id) VALUES (%s, %s, %s)",
                         (conversation_id, encrypted_message, message_id)
                     )
+                    if new_convo is False:
+                        cursor.execute(
+                            "UPDATE conversations set `read`=0 where id = %s", (conversation_id,)
+                        )
                     self._db_handler._conn.commit()
                     self._db_handler._conn.close()
                 

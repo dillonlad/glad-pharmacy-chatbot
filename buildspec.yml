@@ -14,20 +14,11 @@ phases:
     commands:
       - echo "Logging in to Amazon ECR..."
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO
-      - echo "Checking the source branch..."
-      - PR_BASE_REF=$(git log -1 --pretty=%B | grep -o 'base/[^ ]*' || echo "")
 
   build:
     commands:
       - echo "Building Docker images..."
-      - if [[ -n "$PR_BASE_REF" ]]; then
-          echo "Building base image...";
-          docker build -t base:$CODEBUILD_RESOLVED_SOURCE_VERSION -f base_Dockerfile .;
-          docker tag base:$CODEBUILD_RESOLVED_SOURCE_VERSION $ECR_REPO/base:$CODEBUILD_RESOLVED_SOURCE_VERSION;
-          docker push $ECR_REPO/base:$CODEBUILD_RESOLVED_SOURCE_VERSION;
-        fi
-      - echo "Building API image...";
-      - docker build -t api:$CODEBUILD_RESOLVED_SOURCE_VERSION -f api_Dockerfile .;
-      - docker tag api:$CODEBUILD_RESOLVED_SOURCE_VERSION $ECR_REPO/api:$CODEBUILD_RESOLVED_SOURCE_VERSION;
-      - docker push $ECR_REPO/api:$CODEBUILD_RESOLVED_SOURCE_VERSION;
+      - docker build -t api:$CODEBUILD_RESOLVED_SOURCE_VERSION .;
+      - docker tag api:$CODEBUILD_RESOLVED_SOURCE_VERSION $ECR_REPO/gladbot_api_codepipeline_test:latest;
+      - docker push $ECR_REPO/gladbot_api_codepipeline_test:latest;
 

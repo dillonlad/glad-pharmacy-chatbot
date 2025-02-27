@@ -1,7 +1,0 @@
-FROM gladbot_api_base
-
-COPY . .
-
-EXPOSE 8000
-
-ENTRYPOINT [ "uvicorn", "main:create_app_uvicorn", "--host", "0.0.0.0", "--port", "8000", "--factory" ]

@@ -1,0 +1,143 @@
+[33mcommit d15cc16764f94762339c5a0688db58f1b39c6a23[m[33m ([m[1;36mHEAD -> [m[1;32mbase/first-codebuild[m[33m, [m[1;31mglad-pharmacy-chatbot/base/first-codebuild[m[33m)[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Thu Feb 27 17:45:42 2025 +0000
+
+    msg
+
+[33mcommit 20b2df74c900cf41e2899c1d9c12a5574f6e5c82[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Thu Feb 27 17:39:44 2025 +0000
+
+    updated buildspec
+
+[33mcommit 8952091b4e68eed958609427683ecb1bab6574aa[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Thu Feb 27 16:25:46 2025 +0000
+
+    first buildspec
+
+[33mcommit 474525dbbdc345db363d627d6a0ba19da22a4c35[m[33m ([m[1;31mglad-pharmacy-chatbot/dev[m[33m, [m[1;32mdev[m[33m)[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Sun Feb 23 23:21:47 2025 +0000
+
+    added whatsapp and cancel/complete orders eps
+
+[33mcommit 92a6dc8c0d4c978d1b38bf40620e2a7b5225b203[m[33m ([m[1;31mglad-pharmacy-chatbot/main2[m[33m, [m[1;31mglad-pharmacy-chatbot/main[m[33m, [m[1;31mglad-pharmacy-chatbot/first-update[m[33m, [m[1;32mmain[m[33m, [m[1;32mfirst-update[m[33m)[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Tue Feb 18 15:57:30 2025 +0000
+
+    removed lf
+
+[33mcommit b3d9c646ec911de50d30666d4225dcb4bb965ef5[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Tue Feb 18 15:41:40 2025 +0000
+
+    removed tar
+
+[33mcommit 0ba56d62b67769d8dd90f3466cb80a53c644e013[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Tue Feb 18 15:30:04 2025 +0000
+
+    added updates
+
+[33mcommit 3acfb3361749faa9f5652abdff3a9e055ee34077[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Fri Jan 31 19:43:26 2025 +0000
+
+    uses docker deployment
+
+[33mcommit 53084722bddc5bc38571d82f6ca6cca7dcd1d4d9[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Fri Jan 31 15:50:58 2025 +0000
+
+    updated buildspec
+
+[33mcommit c37ce25e2f4be9e63447f673492af91fb7f0bb99[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Fri Jan 31 14:30:07 2025 +0000
+
+    updated buildspec
+
+[33mcommit 2e746ec7ee308b6c5e451dc9644f2af43fa693be[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Fri Jan 31 11:52:46 2025 +0000
+
+    updates buildspec
+
+[33mcommit 47a48aa77f833497eb4c5f8283a321fff62053cf[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Thu Jan 30 22:34:52 2025 +0000
+
+    re-adds service role
+
+[33mcommit 540f7bbe4038210a2e28afbb0a6cdc33b2d52122[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Thu Jan 30 21:19:37 2025 +0000
+
+    removes service role
+
+[33mcommit 2ec301f4172b099f79688320584fa2ee6d331915[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Thu Jan 30 20:39:22 2025 +0000
+
+    adds service role
+
+[33mcommit c64a88118579bb8b5613a80e21dda64483bdd8e7[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Thu Jan 30 18:26:14 2025 +0000
+
+    updated buildspec
+
+[33mcommit 78b028891c318ba8902002a8a6a59a414432ea86[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Thu Jan 30 17:32:21 2025 +0000
+
+    changed app name
+
+[33mcommit abfc7fc66639ba01cf68145884b7cb55867f4b10[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Thu Jan 30 16:47:06 2025 +0000
+
+    edits correct reqs
+
+[33mcommit eb4900bc9128bce5b8214a0f55e681f3f7707e1e[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Thu Jan 30 16:35:17 2025 +0000
+
+    updated buildspec
+
+[33mcommit 55491ec280b8d976d283d07e929c7f276021ed9f[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Thu Jan 30 16:32:39 2025 +0000
+
+    adds eb cli
+
+[33mcommit 61b235b176865cafce78e0535053a92ff0e738b4[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Thu Jan 30 16:16:25 2025 +0000
+
+    changes buildspec
+
+[33mcommit 1b1683a3b910e943f859f614146019fedf330d68[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Thu Jan 30 16:07:50 2025 +0000
+
+    installs eb cli
+
+[33mcommit f35488e12bb93be7728a694f66bec0ea00910378[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Thu Jan 30 15:54:00 2025 +0000
+
+    addded buildspec
+
+[33mcommit 99271ae635115adc22cbe3a085b54cd74853ac4c[m
+Author: dillonlad <dlad82434@gmail.com>
+Date:   Wed Jan 29 17:22:07 2025 +0000
+
+    first commit
+
+[33mcommit c610e6e1f9c4b664c640098384d688d6a729c53f[m
+Author: dillonlad <56037786+dillonlad@users.noreply.github.com>
+Date:   Thu Jan 23 16:14:08 2025 +0000
+
+    Initial commit

@@ -10,3 +10,4 @@
 /fine_tuning
 model.tar.gz
 /.vscode
+*.pyc

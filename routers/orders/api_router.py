@@ -10,7 +10,7 @@ router = APIRouter(prefix="/orders")
 @router.post("/cancel-order", response_model=dict[str, list[OrderUpdateOut]])
 async def cancel_order(
     transaction_id: str,
-    user=Depends(verify_token)
+    db_handler=Depends(verify_token)
 ):
     """
     Cancel a specific paypal order.
@@ -21,11 +21,8 @@ async def cancel_order(
     paypal_handler.void_auth(transaction_id)
     paypal_handler.close_session()
 
-    db_handler = DBHandler()
-    db_handler.start_session()
     wc_manager = WoocommerceManager(db_handler)
     order_updates = wc_manager.get_orders()
-    db_handler.end_session()
 
     return {
         "orders": order_updates
@@ -34,7 +31,7 @@ async def cancel_order(
 @router.post("/complete-order", response_model=dict[str, list[OrderUpdateOut]])
 async def cancel_order(
     transaction_id: str,
-    user=Depends(verify_token)
+    db_handler=Depends(verify_token)
 ):
     """
     Completes a specific paypal order.
@@ -45,11 +42,8 @@ async def cancel_order(
     paypal_handler.capture_auth(transaction_id)
     paypal_handler.close_session()
 
-    db_handler = DBHandler()
-    db_handler.start_session()
     wc_manager = WoocommerceManager(db_handler)
     order_updates = wc_manager.get_orders()
-    db_handler.end_session()
 
     return {
         "orders": order_updates

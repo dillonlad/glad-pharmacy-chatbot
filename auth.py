@@ -7,6 +7,8 @@ import jwt
 from jwt.algorithms import RSAAlgorithm
 import boto3
 
+from wp_db_handler import DBHandler
+
 # Cognito Configuration
 class CognitoSettings(BaseSettings):
 
@@ -33,7 +35,10 @@ def get_cognito_public_keys():
 public_keys = get_cognito_public_keys()
 
 # Function to Verify JWT Token
-def verify_token(token: str = Security(security)):
+def verify_token(
+        token: str = Security(security), 
+        db_handler: DBHandler = Depends(DBHandler.get_session),
+    ):
     try:
         headers = jwt.get_unverified_header(token.credentials)
         key = public_keys.get(headers["kid"])
@@ -56,7 +61,7 @@ def verify_token(token: str = Security(security)):
         if response["Enabled"] == False:
             raise HTTPException(status_code=403, detail="User is disabled")
 
-        return decoded_token  # Contains user info like email, sub (user ID), etc.
+        return db_handler
 
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")

@@ -44,4 +44,18 @@ class DBHandler:
         self._cursor.close()
         self._conn.close()
 
+    @classmethod
+    def get_session(cls):
+        """
+        Using yield is more efficient for FastAPI and will ensure db session is closed after request is complete.
+        """
+
+        db_client = cls()
+        db_client.start_session()
+        try:
+            yield db_client
+        finally:
+            print("Ending session...")
+            db_client.end_session()
+
     

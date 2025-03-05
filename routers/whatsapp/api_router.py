@@ -26,17 +26,13 @@ async def get_channels(user=Depends(verify_token)):
 
 
 @router.get("/conversation/{id}/", response_model=MessagesOut)
-async def get_conversation(id: int, user=Depends(verify_token)):
+async def get_conversation(id: int, db_handler=Depends(verify_token)):
     """
     Get a list of messages in a converation.
     """
 
-    db_handler = DBHandler()
-    db_handler.start_session()
-
     whatsapp_client = WhatsAppClient(db_handler)
     messages = whatsapp_client.get_conversation(id)
-    db_handler.end_session()
 
     return messages
 
@@ -46,28 +42,24 @@ async def get_conversation(id: int, user=Depends(verify_token)):
 async def send_message(
     id: int,
     request: MessageRequest,
-    user=Depends(verify_token)
+    db_handler=Depends(verify_token)
 ):
     """
     Send an individual whatsapp message.
     """
 
-    db_handler = DBHandler()
-    db_handler.start_session()
-
     whatsapp_client = WhatsAppClient(db_handler)
     updated_messages = whatsapp_client.send_message(id, request.type, request.message)
-    db_handler.end_session()
     
     return updated_messages
 
-@router.post("/test-template")
-async def test_send_template():
-    db_handler = DBHandler()
-    db_handler.start_session()
+# @router.post("/test-template")
+# async def test_send_template():
+#     db_handler = DBHandler()
+#     db_handler.start_session()
 
-    whatsapp_client = WhatsAppClient(db_handler)
-    updated_messages = whatsapp_client.send_template_message()
-    db_handler.end_session()
-    return {"status": "ok"}
+#     whatsapp_client = WhatsAppClient(db_handler)
+#     updated_messages = whatsapp_client.send_template_message()
+#     db_handler.end_session()
+#     return {"status": "ok"}
 

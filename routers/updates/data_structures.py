@@ -6,3 +6,4 @@ class UpdatesOut(BaseModel):
 
     orders: List[OrderUpdateOut]
     unread_whatsapps: int = 0
+    repeats: int = 0

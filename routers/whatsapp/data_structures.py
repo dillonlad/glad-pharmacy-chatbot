@@ -25,6 +25,7 @@ class MessageOut(BaseModel):
     type: str
     message: str
     isMe: bool
+    metadata: Optional[dict]
 
 class MessagesOut(BaseModel):
 

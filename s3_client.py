@@ -16,9 +16,9 @@ class S3Settings(BaseSettings):
 
 class S3Client:
 
-    def __init__(self):
+    def __init__(self, settings: S3Settings = S3Settings()):
         
-        self._settings = S3Settings()
+        self._settings = settings
         self._s3_client = boto3.client("s3")
         self._logger = getLogger("fastapi")
 

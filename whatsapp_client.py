@@ -8,6 +8,7 @@ from datetime import datetime
 from fastapi import HTTPException
 from kms_client import KMSClient
 from wp_db_handler import DBHandler
+from s3_client import S3Client, S3Settings
 from logging import getLogger
 
 
@@ -32,6 +33,10 @@ class WhatsAppClient:
         self._socialmessaging_client = boto3.client('socialmessaging')
         self._logger = getLogger("fastapi")
 
+        s3_whatsapp_settings = S3Settings()
+        s3_whatsapp_settings.form_uploads_bucket = self._settings.s3_bucket_name
+        self._s3_client = S3Client(s3_whatsapp_settings)
+
     def send_first_template_message(self, recipient):
         
         self._logger.info("Sending first template message to user.")
@@ -51,6 +56,57 @@ class WhatsAppClient:
             metaApiVersion=self._settings.meta_api_version
         )
         return response
+    
+    def send_template_message(self, conversation_id, template_name):
+
+        previous_messages = self.get_conversation(conversation_id)
+
+        conversation = self._db_handler.fetchone(
+            "SELECT id, phone_number from conversations where id = {} and preference > 0".format(conversation_id)
+        )
+        if conversation is None:
+            raise HTTPException(status_code=406, detail="No opted in user.")
+        
+        template = self._db_handler.fetchone(
+            "SELECT description FROM whatsapp_templates where name = '{}'".format(template_name)
+        )
+        if template is None:
+            raise HTTPException(status_code=404, detail="No template.")
+        
+        recipient = conversation["phone_number"]
+        
+        # Construct the message payload
+        message_payload = {
+            "messaging_product": "whatsapp",
+            "to": f"+{recipient}",
+            "type": "template",
+            "template": {"language": {"code": "en"}, "name": template_name}
+        }
+        # Encode the message payload to base64
+        encoded_message = json.dumps(message_payload).encode()
+        # Send the message using AWS End User Messaging Social
+        response = self._socialmessaging_client.send_whatsapp_message(
+            message=encoded_message,
+            originationPhoneNumberId=self._settings.phone_number_id,
+            metaApiVersion=self._settings.meta_api_version
+        )
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode", None) == 200 and response.get("messageId", None) is not None:
+
+            encrypted_message = self._kms_client.encrypt_message("Template")
+            metadata = json.dumps({
+                            "template": template["description"]
+                        })
+
+            sql = "INSERT INTO messages (conversation_id, type, message, metadata, is_me) \
+                VALUES (%s, 'template', '%s', '%s', 1)" % (conversation_id, encrypted_message, metadata)
+            self._db_handler.execute(sql, commit=True)
+
+        else:
+            raise HTTPException(status_code=500, detail="Failed to send WhatsApp message.")
+        
+        previous_messages["messages"].append({"id": -1, "message": "Template", "type": "template", "isMe": True})
+        return previous_messages
 
     def send_message(
             self, 
@@ -62,8 +118,11 @@ class WhatsAppClient:
         previous_messages = self.get_conversation(conversation_id)
 
         conversation = self._db_handler.fetchone(
-            "SELECT id, phone_number from conversations where id = {}".format(conversation_id)
+            "SELECT id, phone_number from conversations where id = {} and preference > 0".format(conversation_id)
         )
+        if conversation is None:
+            raise HTTPException(status_code=406, detail="No opted in user.")
+        
         recipient = conversation["phone_number"]
 
         # Construct the message payload
@@ -114,6 +173,7 @@ class WhatsAppClient:
                 AND m1.created = m2.latest
                 ORDER BY m1.created DESC
                 ) top_message on conversations.id=top_message.conversation_id
+                where conversations.preference > 0
                 order by conversations.read asc, top_message.created desc
               """
 
@@ -153,8 +213,11 @@ class WhatsAppClient:
             if message["message"] != "":
                 _message["message"] = self._kms_client.decrypt_message(message["message"])
             if message["type"] != "text" and message["metadata"]:
-                attachment_url = json.loads(message["metadata"]).get("media_url", "")
-                _message["message"] += f"\nAttachment: {attachment_url}"
+                metadata = json.loads(message["metadata"])
+                s3_key = metadata.get("fp", )
+                presigned_url = self._s3_client.get_form_presigned_url(s3_key)
+                metadata["preview_url"] = presigned_url
+                _message["metadata"] = metadata
             _message["isMe"] = message["is_me"]
             formatted_messages.append(_message)
 
@@ -219,6 +282,14 @@ class WhatsAppClient:
                     # Handle text messages
                     self._logger.debug("Message type text")
                     message_text = message["text"]["body"]
+                    preference = 2
+                    msg_lower = message_text.lower()
+                    if msg_lower in ["opt-out completely", "unsubscribe", "stop"]:
+                        self._logger.debug(f"User opting out completely")
+                        preference = 0
+                    elif msg_lower == "no promotions":
+                        self._logger.debug(f"User opted out of promotions")
+                        preference = 1
                     # 3️⃣ Encrypt the message
                     encrypted_message = self._kms_client.encrypt_message(message_text)
                     # 4️⃣ Save the message
@@ -228,7 +299,7 @@ class WhatsAppClient:
                     )
                     if new_convo is False:
                         cursor.execute(
-                            "UPDATE conversations set `read`=0 where id = %s", (conversation_id,)
+                            "UPDATE conversations set `read`=0, `preference`=%s where id = %s", (preference, conversation_id,)
                         )
                     self._db_handler._conn.commit()
                     self._db_handler._conn.close()
@@ -264,6 +335,7 @@ class WhatsAppClient:
                         if mime_type:
                             # Guess the extension based on the MIME type (returns something like ".jpg")
                             file_extension = mimetypes.guess_extension(mime_type) or ""
+                            file_extension = ".jpeg" if file_extension == ".jpg" else file_extension
 
                     # Construct the S3 URL
                     fp = f"{s3_key}{media_id}{file_extension}"

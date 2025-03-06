@@ -55,7 +55,6 @@ class DBHandler:
         try:
             yield db_client
         finally:
-            print("Ending session...")
             db_client.end_session()
 
     

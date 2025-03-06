@@ -11,16 +11,13 @@ router = APIRouter(prefix="/whatsapp")
 
 
 @router.get("/get-channels/", response_model=ChannelsOut)
-async def get_channels(user=Depends(verify_token)):
+async def get_channels(db_handler=Depends(verify_token)):
     """
     Get a list of conversations and their latest messages
     """
-    db_handler = DBHandler()
-    db_handler.start_session()
 
     whatsapp_client = WhatsAppClient(db_handler)
     channels = whatsapp_client.get_channels()
-    db_handler.end_session()
 
     return channels
 
@@ -50,16 +47,18 @@ async def send_message(
 
     whatsapp_client = WhatsAppClient(db_handler)
     updated_messages = whatsapp_client.send_message(id, request.type, request.message)
-    
+
     return updated_messages
 
-# @router.post("/test-template")
-# async def test_send_template():
-#     db_handler = DBHandler()
-#     db_handler.start_session()
+@router.post("/send-template/{id}/{template_name}/")
+async def send_template(
+    id: int,
+    template_name: str,
+    db_handler=Depends(verify_token)
+):
 
-#     whatsapp_client = WhatsAppClient(db_handler)
-#     updated_messages = whatsapp_client.send_template_message()
-#     db_handler.end_session()
-#     return {"status": "ok"}
+    whatsapp_client = WhatsAppClient(db_handler)
+    updated_messages = whatsapp_client.send_template_message(id, template_name)
+
+    return updated_messages
 

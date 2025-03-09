@@ -25,7 +25,8 @@ class MessageOut(BaseModel):
     type: str
     message: str
     isMe: bool
-    metadata: Optional[dict]
+    status: Optional[str]
+    metadata: Optional[Union[list, dict]]
 
 class MessagesOut(BaseModel):
 

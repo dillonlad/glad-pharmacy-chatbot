@@ -142,6 +142,8 @@ class WhatsAppClient:
             metaApiVersion=self._settings.meta_api_version
         )
 
+        metadata = None
+
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode", None) == 200 and response.get("messageId", None) is not None:
 
             encrypted_message = self._kms_client.encrypt_message(message)
@@ -154,7 +156,7 @@ class WhatsAppClient:
         else:
             raise HTTPException(status_code=500, detail="Failed to send WhatsApp message.")
         
-        previous_messages["messages"].append({"id": -1, "message": message, "type": message_type, "isMe": True})
+        previous_messages["messages"].append({"id": -1, "message": message, "type": message_type, "isMe": True, "metadata": metadata})
         return previous_messages
     
     def get_channels(self):
@@ -200,7 +202,7 @@ class WhatsAppClient:
         """
         
         sql = """
-                SELECT messages.id, messages.type, messages.message, messages.metadata, messages.is_me 
+                SELECT messages.id, messages.type, messages.message, messages.metadata, messages.is_me, messages.status 
                 from conversations
                 inner join messages on conversations.id=messages.conversation_id 
                 where conversations.id = {}
@@ -212,12 +214,13 @@ class WhatsAppClient:
             _message = message
             if message["message"] != "":
                 _message["message"] = self._kms_client.decrypt_message(message["message"])
-            if message["type"] != "text" and message["metadata"]:
-                metadata = json.loads(message["metadata"])
+            
+            metadata = json.loads(message["metadata"]) if message["metadata"] else None
+            if message["type"] != "text" and metadata:
                 s3_key = metadata.get("fp", )
                 presigned_url = self._s3_client.get_form_presigned_url(s3_key)
                 metadata["preview_url"] = presigned_url
-                _message["metadata"] = metadata
+            _message["metadata"] = metadata
             _message["isMe"] = message["is_me"]
             formatted_messages.append(_message)
 
@@ -236,16 +239,62 @@ class WhatsAppClient:
         _count = self._db_handler.fetchone(sql)
         return _count["unread_messages"]
     
-    def process_incoming_message(self, whatsapp_webhook_entry, message_id):
+    def update_message_status(self, whatsapp_webhook_entry):
 
+        status_update = whatsapp_webhook_entry["changes"][0]["value"]["statuses"][0]
+        wamid = status_update["id"]
+        recipient_phone_number = status_update["recipient_id"]
+
+        with self._db_handler._cursor as cursor:
+            # Check if this is a repeated SQS message
+            cursor.execute("SELECT `messages`.id, `messages`.metadata, `messages`.update_timestamp from messages where `messages`.wamid = %s", (wamid,))
+            message = cursor.fetchone()
+            if message is None:
+                cursor.execute("SELECT `messages`.id, `messages`.metadata, `messages`.update_timestamp from `conversations` inner join messages where `conversations`.phone_number = %s order by `messages`.created desc limit 1", (recipient_phone_number,))
+                message = cursor.fetchone()
+            if message is None:
+                self._logger.debug("No message found")
+                return
+            
+            update_ts = int(status_update["timestamp"])
+            new_status = status_update["status"]
+
+            previous_update = message["update_timestamp"]
+            if previous_update is not None and previous_update > update_ts:
+                self._logger.debug("Not overwriting newer update")
+                return
+            
+            if new_status.lower() == "failed":
+                
+                metadata = json.loads(message["metadata"]) if message["metadata"] is not None else {}
+                metadata["failed_reason"] = status_update["errors"]
+                metadata = json.dumps(metadata)
+            else:
+                metadata = message["metadata"]
+            
+            cursor.execute(
+                    "UPDATE messages set `status`=%s, wamid=%s, metadata=%s, update_timestamp=%s where id = %s", (new_status, wamid, metadata, update_ts, message["id"],)
+                )
+            self._db_handler._conn.commit()
+            self._db_handler._conn.close()
+
+    def process_incoming_message(self, whatsapp_webhook_entry, message_id):
+        
+        self._db_handler.start_session()
         if "messages" not in whatsapp_webhook_entry["changes"][0]["value"]:
             self._logger.info("Other WhatsApp queued message")
+            if "statuses" in whatsapp_webhook_entry["changes"][0]["value"]:
+                self.update_message_status(whatsapp_webhook_entry)
+                return
+            else:
+                self._logger.debug("Different update")
             return
-        
+        self._logger.debug("extracting")
         # Extract message details
         phone_number = whatsapp_webhook_entry["changes"][0]["value"]["messages"][0]["from"]
         profile_name = whatsapp_webhook_entry["changes"][0]["value"]["contacts"][0]["profile"]["name"]
         message = whatsapp_webhook_entry["changes"][0]["value"]["messages"][0]
+        wamid = message["id"]
         message_type = message.get("type", "text") 
 
         try:
@@ -256,6 +305,7 @@ class WhatsAppClient:
                 existing_message = cursor.fetchone()
 
                 if existing_message is not None:
+                    self._logger.debug("repeated message")
                     return
 
                 # 1️⃣ Check if the phone number exists in `conversations`
@@ -294,8 +344,8 @@ class WhatsAppClient:
                     encrypted_message = self._kms_client.encrypt_message(message_text)
                     # 4️⃣ Save the message
                     cursor.execute(
-                        "INSERT INTO messages (conversation_id, message, sns_message_id) VALUES (%s, %s, %s)",
-                        (conversation_id, encrypted_message, message_id)
+                        "INSERT INTO messages (conversation_id, wamid, message, sns_message_id) VALUES (%s, %s, %s, %s)",
+                        (conversation_id, wamid, encrypted_message, message_id)
                     )
                     if new_convo is False:
                         cursor.execute(
@@ -350,8 +400,8 @@ class WhatsAppClient:
 
                     # Save the media URL in the database
                     cursor.execute(
-                        "INSERT INTO messages (conversation_id, type, message, metadata, sns_message_id) VALUES (%s, %s, %s, %s, %s)",
-                        (conversation_id, message_type, caption, metadata, message_id)
+                        "INSERT INTO messages (conversation_id, wamid, type, message, metadata, sns_message_id) VALUES (%s, %s, %s, %s, %s, %s)",
+                        (conversation_id, wamid, message_type, caption, metadata, message_id)
                     )
 
                     if new_convo is False:

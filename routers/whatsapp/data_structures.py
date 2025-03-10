@@ -31,3 +31,4 @@ class MessageOut(BaseModel):
 class MessagesOut(BaseModel):
 
     messages: list[MessageOut]
+    open: bool

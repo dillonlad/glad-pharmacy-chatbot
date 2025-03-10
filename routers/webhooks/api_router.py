@@ -9,6 +9,9 @@ router = APIRouter(prefix="/webhooks")
 
 @router.get("/process-queue")
 async def process_queue(background_tasks: BackgroundTasks):
+    """
+    Ingest items in SQS Queue.
+    """
 
     db_handler = DBHandler()
     db_handler.start_session()

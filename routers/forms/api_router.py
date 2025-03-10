@@ -73,6 +73,9 @@ async def mark_form_read(
     form_id: int,
     db_handler=Depends(verify_token),
 ):
+    """
+    Mark a form as 'read' so it's no longer an update.
+    """
     
     form_entry_updates = get_forms(db_handler, form_type)
 

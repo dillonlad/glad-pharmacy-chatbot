@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings
 import boto3
 import json
+from pytz import utc
 import os
 import traceback
 import mimetypes
@@ -156,7 +157,7 @@ class WhatsAppClient:
         else:
             raise HTTPException(status_code=500, detail="Failed to send WhatsApp message.")
         
-        previous_messages["messages"].append({"id": -1, "message": message, "type": message_type, "isMe": True, "metadata": metadata})
+        previous_messages["messages"].append({"id": -1, "message": message, "type": message_type, "isMe": True, "metadata": metadata, "status": "sending"})
         return previous_messages
     
     def get_channels(self):
@@ -175,7 +176,7 @@ class WhatsAppClient:
                 AND m1.created = m2.latest
                 ORDER BY m1.created DESC
                 ) top_message on conversations.id=top_message.conversation_id
-                where conversations.preference > 0
+                where conversations.preference > 0 and conversations.active = 1
                 order by conversations.read asc, top_message.created desc
               """
 
@@ -202,10 +203,10 @@ class WhatsAppClient:
         """
         
         sql = """
-                SELECT messages.id, messages.type, messages.message, messages.metadata, messages.is_me, messages.status 
+                SELECT messages.id, messages.type, messages.message, messages.metadata, messages.is_me, messages.status, messages.created 
                 from conversations
                 inner join messages on conversations.id=messages.conversation_id 
-                where conversations.id = {}
+                where conversations.id = {} and conversations.active=1
                 order by messages.created asc;
               """.format(id)
         messages = self._db_handler.fetchall(sql)
@@ -228,7 +229,15 @@ class WhatsAppClient:
             update_sql = """update conversations set `read`=1 where id = {}""".format(id)
             self._db_handler.execute(update_sql, commit=True)
 
-        return {"messages": formatted_messages}
+        last_message = messages[-1]
+        # 2025-03-09 18:25:12
+        created_dt_utc: datetime = last_message["created"]
+        created_dt_utc = created_dt_utc.replace(tzinfo=utc)
+        current_utc = datetime.now(tz=utc)
+        time_difference = current_utc - created_dt_utc
+        conversation_open = time_difference.total_seconds() < 86400
+
+        return {"messages": formatted_messages, "open": conversation_open}
     
     def get_unread_conversations(self):
         """

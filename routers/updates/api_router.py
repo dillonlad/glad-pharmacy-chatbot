@@ -12,7 +12,7 @@ router = APIRouter()
 @router.get("/updates", response_model=UpdatesOut)
 async def get_updates(db_handler=Depends(verify_token)):
     """
-    Get all updates.
+    Get all updates for WhatsApp, repeats, contact forms and enquiries.
     """
 
     # Get latest shop orders

@@ -6,7 +6,30 @@ class WoocommerceManager:
     def __init__(self, db_handler: DBHandler):
         self._db_handler = db_handler
 
+    def get_metrics(self):
+        """
+        Get the most popular items from the last week.
+        """
+
+        items = self._db_handler.fetchall("""
+                select oi.order_item_name, count(oi.order_item_id) AS `item_total`
+                from wp_woocommerce_order_items oi
+                inner join wp_wc_orders orders on oi.order_id=orders.id
+                where oi.order_item_type='line_item'
+                and datediff(current_date, orders.date_created_gmt) < 7
+                group by oi.order_item_name;
+                """
+                )
+        total_items = sum([_item["item_total"] for _item in items])
+        return {
+            "total": total_items,
+            "popular": items,
+        }
+
     def get_orders(self):
+        """
+        Get the individual orders awaiting response.
+        """
 
         on_hold_orders = self._db_handler.fetchall(
             """

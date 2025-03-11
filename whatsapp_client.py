@@ -25,6 +25,9 @@ class WhatsAppSettings(BaseSettings):
 
 
 class WhatsAppClient:
+    """
+    Wrapper class for AWS End User Messaging (WhatsApp)
+    """
 
     def __init__(self, db_handler: DBHandler):
         
@@ -39,6 +42,12 @@ class WhatsAppClient:
         self._s3_client = S3Client(s3_whatsapp_settings)
 
     def send_first_template_message(self, recipient):
+        """
+        Sends the first_message template to a recipient. This template is sent when the user first messages us
+        and contains details on how to unsubscribe.
+
+        :param recipient: The phone number of the end user.
+        """
         
         self._logger.info("Sending first template message to user.")
         # Construct the message payload
@@ -59,6 +68,12 @@ class WhatsAppClient:
         return response
     
     def send_template_message(self, conversation_id, template_name):
+        """
+        Send a template message to a user.
+
+        :param conversation_id: The conversation we are adding to.
+        :param template_name: The name of the Meta WhatsApp template.
+        """
 
         previous_messages = self.get_conversation(conversation_id)
 
@@ -115,6 +130,13 @@ class WhatsAppClient:
             message_type, 
             message,
         ):
+        """
+        Sends a WhatsApp message to a user.
+
+        :param conversation_id: The conversation we are adding to.
+        :param message_type: Should be text. Could in the future be video, audio or image.
+        :param message: The message to be sent to the user.
+        """
 
         previous_messages = self.get_conversation(conversation_id)
 
@@ -161,6 +183,10 @@ class WhatsAppClient:
         return previous_messages
     
     def get_channels(self):
+        """
+        Get a list of active and subscribed conversations.
+        :return channels: Fictionary containing a list of conversations and their last message.
+        """
         
         sql = """
                 select conversations.id, conversations.profile_name as `title`, top_message.created as `date`, case when top_message.message is not null and top_message.message != '' then top_message.message when top_message.metadata is not null then 'Multimedia' else 'No Messages' end as `subtitle`, conversations.read
@@ -199,7 +225,8 @@ class WhatsAppClient:
 
     def get_conversation(self, id, mark_as_read=True):
         """
-        Get all of the messages for an individual conversation.
+        Get all of the messages for an individual conversation and conversation status (after 24 hours WhatsApp marks conversations as 'closed')
+        :return: Dictionary containing the full list of messages in a conversations and the status of conversations
         """
         
         sql = """
@@ -241,7 +268,7 @@ class WhatsAppClient:
     
     def get_unread_conversations(self):
         """
-        Get the number of unread messages.
+        Get the number of unread messages. (For the number shows above WhatsApp icon)
         """
 
         sql = "SELECT COUNT(id) AS unread_messages FROM conversations where `read`=0"
@@ -249,6 +276,10 @@ class WhatsAppClient:
         return _count["unread_messages"]
     
     def update_message_status(self, whatsapp_webhook_entry):
+        """
+        Updates a message status from sending -> sent(/failed) -> delivered -> read.
+        :param whatsapp_webhook_entry: Dictionary containing WhatsApp webhook body stored in SQS.
+        """
 
         status_update = whatsapp_webhook_entry["changes"][0]["value"]["statuses"][0]
         wamid = status_update["id"]
@@ -288,7 +319,11 @@ class WhatsAppClient:
             self._db_handler._conn.close()
 
     def process_incoming_message(self, whatsapp_webhook_entry, message_id):
-        
+        """
+        Processes a message eceived from WhatsApp as stored in SQS queue.
+        :param whatsapp_webhook_entry: Dictionary containing WhatsApp webhook body stored in SQS.
+        :param message_id: SNS message ID.
+        """
         self._db_handler.start_session()
         if "messages" not in whatsapp_webhook_entry["changes"][0]["value"]:
             self._logger.info("Other WhatsApp queued message")

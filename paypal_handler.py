@@ -16,6 +16,9 @@ class PayPalConfig(BaseSettings):
     auth_data: dict[str, str] = {"grant_type": "client_credentials"}
 
 class PayPalHandler:
+    """
+    Handles refunding and accepting of orders using PayPal API.
+    """
 
     def __init__(self):
         self._settings = PayPalConfig()
@@ -32,7 +35,6 @@ class PayPalHandler:
             auth_response = auth_client.post(self._settings.auth_uri, data=self._settings.auth_data)
 
         if auth_response.status_code != 200:
-            print(auth_response)
             raise HTTPException(status_code=500, detail="Failed to obtain PayPal access token")
         
         self._bearer_token = auth_response.json().get("access_token")

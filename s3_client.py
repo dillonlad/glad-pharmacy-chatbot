@@ -15,6 +15,9 @@ class S3Settings(BaseSettings):
 
 
 class S3Client:
+    """
+    Handles the retrieval of S3 objects or their presigned URLs
+    """
 
     def __init__(self, settings: S3Settings = S3Settings()):
         
@@ -30,7 +33,6 @@ class S3Client:
         """
         Generate a presigned Amazon S3 URL that can be used to perform an action.
 
-        :param s3_client: A Boto3 Amazon S3 client.
         :param client_method: The name of the client method that the URL performs.
         :param method_parameters: The parameters of the specified client method.
         :param expires_in: The number of seconds the presigned URL is valid for.

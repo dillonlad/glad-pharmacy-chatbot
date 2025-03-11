@@ -56,7 +56,7 @@ def verify_token(
 
         email = decoded_token.get("email")
 
-        # ✅ Check if the user is disabled
+        # Check if the user is disabled
         response = client.admin_get_user(UserPoolId=cognito_settings.userpool_id, Username=email)
         if response["Enabled"] == False:
             raise HTTPException(status_code=403, detail="User is disabled")

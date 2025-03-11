@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 
 class Config(BaseSettings):
     # Basic app env vars
-    APP_NAME: str = "Task API"
+    APP_NAME: str = "Glad Pharmacy API"
     VERSION: str = "0.0.0"
     DEBUG: bool = False
 

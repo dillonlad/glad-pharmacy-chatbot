@@ -26,12 +26,9 @@ class SQSClient:
 
     def process_queue(self):
         """
-        Process SQS queue
+        Process and ingest SQS queue. Messages stored in queue will all be WhatsApp related.
         """
 
-        sqs_client = boto3.client('sqs')
-
-        """ Fetch and process messages from SQS """
         while True:
             try:
 
@@ -53,7 +50,7 @@ class SQSClient:
                                 self._whatsapp_client.process_incoming_message(webhook_entry, message_id)
 
                                 # Delete processed message from SQS
-                                sqs_client.delete_message(
+                                self._sqs_client.delete_message(
                                     QueueUrl=self._settings.url,
                                     ReceiptHandle=message["ReceiptHandle"]
                                 )

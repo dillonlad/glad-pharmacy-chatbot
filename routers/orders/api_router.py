@@ -4,8 +4,19 @@ from paypal_handler import PayPalHandler
 from woocommerce_manager import WoocommerceManager
 from wp_db_handler import DBHandler
 from data_structures import OrderUpdateOut
+from routers.orders.data_structures import MetricsOut
 
 router = APIRouter(prefix="/orders")
+
+@router.get("/metrics", response_model=MetricsOut)
+async def get_metrics(db_handler=Depends(verify_token)):
+    """
+    Get metrics for most popular items.
+    """
+
+    wc_manager = WoocommerceManager(db_handler)
+    return wc_manager.get_metrics()
+
 
 @router.post("/cancel-order", response_model=dict[str, list[OrderUpdateOut]])
 async def cancel_order(

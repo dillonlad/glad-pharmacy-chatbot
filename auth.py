@@ -7,6 +7,7 @@ import jwt
 from jwt.algorithms import RSAAlgorithm
 import boto3
 
+from cognito_user import CognitoUser
 from wp_db_handler import DBHandler
 
 # Cognito Configuration
@@ -55,13 +56,14 @@ def verify_token(
         )
 
         email = decoded_token.get("email")
+        sub = decoded_token.get("sub")
 
         # Check if the user is disabled
         response = client.admin_get_user(UserPoolId=cognito_settings.userpool_id, Username=email)
         if response["Enabled"] == False:
             raise HTTPException(status_code=403, detail="User is disabled")
 
-        return db_handler
+        return CognitoUser(sub, db_handler)
 
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")

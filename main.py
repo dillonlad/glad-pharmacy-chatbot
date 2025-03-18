@@ -10,6 +10,7 @@ from routers.updates.api_router import router as updates_router
 from routers.whatsapp.api_router import router as whatsapp_router
 from routers.webhooks.api_router import router as webhooks_router
 from routers.forms.api_router import router as forms_router
+from routers.subscriptions.api_router import router as subscriptions_router
 
 
 from pydantic import BaseModel
@@ -65,6 +66,7 @@ def create_app(logger: Logger = None) -> FastAPI:
     app.include_router(whatsapp_router)
     app.include_router(webhooks_router)
     app.include_router(forms_router)
+    app.include_router(subscriptions_router)
 
     # Set CORS access (Allows access from a front-end hosted on a separate domain)
     app.add_middleware(

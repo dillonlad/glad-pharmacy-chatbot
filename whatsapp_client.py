@@ -10,6 +10,7 @@ from fastapi import HTTPException
 from kms_client import KMSClient
 from wp_db_handler import DBHandler
 from s3_client import S3Client, S3Settings
+from webpush_client import WebpushClient
 from logging import getLogger
 
 
@@ -22,6 +23,7 @@ class WhatsAppSettings(BaseSettings):
     phone_number_id: str
     meta_api_version: str = "v20.0"
     s3_bucket_name: str = "glad-whatsapp"
+    push_notifs: bool = True
 
 
 class WhatsAppClient:
@@ -416,7 +418,11 @@ class WhatsAppClient:
             else:
                 self._logger.debug("Different update")
             return
+        
         self._logger.debug("extracting")
+
+        webpush_client = WebpushClient(db_handler=self._db_handler)
+
         # Extract message details
         phone_number = whatsapp_webhook_entry["changes"][0]["value"]["messages"][0]["from"]
         profile_name = whatsapp_webhook_entry["changes"][0]["value"]["contacts"][0]["profile"]["name"]
@@ -452,7 +458,7 @@ class WhatsAppClient:
                     new_convo = True
                     self.send_first_template_message(phone_number)
                 else:
-                    self._logger.debug("Using existing conersation.")
+                    self._logger.debug("Using existing conversation.")
                     conversation_id = conversation["id"]
 
                 if message_type == "text":
@@ -537,7 +543,8 @@ class WhatsAppClient:
                         )
 
                     self._db_handler._conn.commit()
-                    
+
+            webpush_client.send_push("New WhatsApp message", "You've received a new WhatsApp message from {}".format(profile_name))
             return {"statusCode": 200, "body": json.dumps({"message": "Message stored successfully"})}
 
         except Exception as e:

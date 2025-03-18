@@ -9,11 +9,12 @@ from routers.orders.data_structures import MetricsOut
 router = APIRouter(prefix="/orders")
 
 @router.get("/metrics", response_model=MetricsOut)
-async def get_metrics(db_handler=Depends(verify_token)):
+async def get_metrics(user=Depends(verify_token)):
     """
     Get metrics for most popular items.
     """
 
+    db_handler = user.db_handler
     wc_manager = WoocommerceManager(db_handler)
     return wc_manager.get_metrics()
 
@@ -21,12 +22,13 @@ async def get_metrics(db_handler=Depends(verify_token)):
 @router.post("/cancel-order", response_model=dict[str, list[OrderUpdateOut]])
 async def cancel_order(
     transaction_id: str,
-    db_handler=Depends(verify_token)
+    user=Depends(verify_token)
 ):
     """
     Cancel a specific paypal order.
     """
     
+    db_handler = user.db_handler
     paypal_handler = PayPalHandler()
     paypal_handler.start_session()
     paypal_handler.void_auth(transaction_id)
@@ -42,12 +44,13 @@ async def cancel_order(
 @router.post("/complete-order", response_model=dict[str, list[OrderUpdateOut]])
 async def cancel_order(
     transaction_id: str,
-    db_handler=Depends(verify_token)
+    user=Depends(verify_token)
 ):
     """
     Completes a specific paypal order.
     """
     
+    db_handler = user.db_handler
     paypal_handler = PayPalHandler()
     paypal_handler.start_session()
     paypal_handler.capture_auth(transaction_id)

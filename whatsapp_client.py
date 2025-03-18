@@ -67,7 +67,14 @@ class WhatsAppClient:
         )
         return response
     
-    def send_template_message(self, conversation_id, template_name):
+    def send_template_message(
+            self, 
+            conversation_id, 
+            template_name, 
+            previous_messages = None, 
+            conversation = None,
+            components = None,
+        ):
         """
         Send a template message to a user.
 
@@ -75,11 +82,12 @@ class WhatsAppClient:
         :param template_name: The name of the Meta WhatsApp template.
         """
 
-        previous_messages = self.get_conversation(conversation_id)
+        previous_messages = self.get_conversation(conversation_id) if previous_messages is None else previous_messages
 
         conversation = self._db_handler.fetchone(
-            "SELECT id, phone_number from conversations where id = {} and preference > 0".format(conversation_id)
-        )
+            "SELECT id, phone_number, profile_name from conversations where id = {} and preference > 0".format(conversation_id)
+        ) if conversation is None else conversation
+
         if conversation is None:
             raise HTTPException(status_code=406, detail="No opted in user.")
         
@@ -90,13 +98,17 @@ class WhatsAppClient:
             raise HTTPException(status_code=404, detail="No template.")
         
         recipient = conversation["phone_number"]
+
+        template_payload = {"language": {"code": "en"}, "name": template_name}
+        if components is not None:
+            template_payload["components"] = components
         
         # Construct the message payload
         message_payload = {
             "messaging_product": "whatsapp",
             "to": f"+{recipient}",
             "type": "template",
-            "template": {"language": {"code": "en"}, "name": template_name}
+            "template": template_payload
         }
         # Encode the message payload to base64
         encoded_message = json.dumps(message_payload).encode()
@@ -110,9 +122,10 @@ class WhatsAppClient:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode", None) == 200 and response.get("messageId", None) is not None:
 
             encrypted_message = self._kms_client.encrypt_message("Template")
-            metadata = json.dumps({
+            metadata_dict = {
                             "template": template["description"]
-                        })
+                        }
+            metadata = json.dumps(metadata_dict)
 
             sql = "INSERT INTO messages (conversation_id, type, message, metadata, is_me) \
                 VALUES (%s, 'template', '%s', '%s', 1)" % (conversation_id, encrypted_message, metadata)
@@ -121,7 +134,7 @@ class WhatsAppClient:
         else:
             raise HTTPException(status_code=500, detail="Failed to send WhatsApp message.")
         
-        previous_messages["messages"].append({"id": -1, "message": "Template", "type": "template", "isMe": True})
+        previous_messages["messages"].append({"id": -1, "message": "Template", "type": "template", "isMe": True, "status": "sending", "metadata": metadata_dict})
         return previous_messages
 
     def send_message(
@@ -139,12 +152,62 @@ class WhatsAppClient:
         """
 
         previous_messages = self.get_conversation(conversation_id)
-
         conversation = self._db_handler.fetchone(
-            "SELECT id, phone_number from conversations where id = {} and preference > 0".format(conversation_id)
+            "SELECT id, phone_number, profile_name from conversations where id = {} and preference > 0".format(conversation_id)
         )
         if conversation is None:
             raise HTTPException(status_code=406, detail="No opted in user.")
+
+        if previous_messages["open"] is False:
+
+            if previous_messages["empty_conversation"] is True:
+                return self.send_template_message(
+                    conversation_id,
+                    "business_initiated_conversation",
+                    previous_messages=previous_messages,
+                    conversation=conversation,
+                    components=[
+                        {
+                            "type": "body",
+                            "parameters": [
+                                {
+                                    "type": "text",
+                                    "parameter_name": "user_name",
+                                    "text": conversation["profile_name"]
+                                },
+                                {
+                                    "type": "text",
+                                    "parameter_name": "account_update",
+                                    "text": message
+                                }
+                            ]
+                        }
+                    ]
+                )
+
+            return self.send_template_message(
+                conversation_id,
+                "query_update",
+                previous_messages=previous_messages,
+                conversation=conversation,
+                components=[
+                    {
+                        "type": "body",
+                        "parameters": [
+                            {
+                                "type": "text",
+                                "parameter_name": "user_name",
+                                "text": conversation["profile_name"]
+                            },
+                            {
+                                "type": "text",
+                                "parameter_name": "response",
+                                "text": message
+                            }
+                        ]
+                    }
+                ]
+            )
         
         recipient = conversation["phone_number"]
 
@@ -238,6 +301,10 @@ class WhatsAppClient:
               """.format(id)
         messages = self._db_handler.fetchall(sql)
         formatted_messages = []
+        last_user_msg_dt = None
+
+        empty_conversation = len(messages) == 0
+
         for message in messages:
             _message = message
             if message["message"] != "":
@@ -252,19 +319,30 @@ class WhatsAppClient:
             _message["isMe"] = message["is_me"]
             formatted_messages.append(_message)
 
+            if bool(message["is_me"]) is False:
+                last_user_msg_dt = message["created"]
+
         if mark_as_read is True:
             update_sql = """update conversations set `read`=1 where id = {}""".format(id)
             self._db_handler.execute(update_sql, commit=True)
 
-        last_message = messages[-1]
-        # 2025-03-09 18:25:12
-        created_dt_utc: datetime = last_message["created"]
-        created_dt_utc = created_dt_utc.replace(tzinfo=utc)
+        if last_user_msg_dt is None:
+            return {
+                "messages": formatted_messages, 
+                "open": False, 
+                "empty_conversation": empty_conversation,
+                }
+
+        last_user_msg_dt = last_user_msg_dt.replace(tzinfo=utc)
         current_utc = datetime.now(tz=utc)
-        time_difference = current_utc - created_dt_utc
+        time_difference = current_utc - last_user_msg_dt
         conversation_open = time_difference.total_seconds() < 86400
 
-        return {"messages": formatted_messages, "open": conversation_open}
+        return {
+            "messages": formatted_messages, 
+            "open": conversation_open, 
+            "empty_conversation": empty_conversation,
+            }
     
     def get_unread_conversations(self):
         """
@@ -282,19 +360,24 @@ class WhatsAppClient:
         """
 
         status_update = whatsapp_webhook_entry["changes"][0]["value"]["statuses"][0]
-        wamid = status_update["id"]
+        wamid = status_update.get("id", None)
         recipient_phone_number = status_update["recipient_id"]
 
         with self._db_handler._cursor as cursor:
             # Check if this is a repeated SQS message
-            cursor.execute("SELECT `messages`.id, `messages`.metadata, `messages`.update_timestamp from messages where `messages`.wamid = %s", (wamid,))
-            message = cursor.fetchone()
-            if message is None:
-                cursor.execute("SELECT `messages`.id, `messages`.metadata, `messages`.update_timestamp from `conversations` inner join messages where `conversations`.phone_number = %s order by `messages`.created desc limit 1", (recipient_phone_number,))
+
+            if wamid is not None:
+                cursor.execute("SELECT `messages`.id, `messages`.metadata, `messages`.update_timestamp from messages where `messages`.wamid = %s", (wamid,))
                 message = cursor.fetchone()
-            if message is None:
-                self._logger.debug("No message found")
-                return
+                if message is None:
+                    cursor.execute("SELECT `messages`.id, `messages`.metadata, `messages`.update_timestamp from `conversations` inner join messages where `conversations`.phone_number = %s and `messages`.is_me=1 order by `messages`.created desc limit 1", (recipient_phone_number,))
+                    message = cursor.fetchone()
+                if message is None:
+                    self._logger.debug("No message found")
+                    return
+            else:
+                cursor.execute("SELECT `messages`.id, `messages`.metadata, `messages`.update_timestamp from `conversations` inner join messages where `conversations`.phone_number = %s and `messages`.is_me=1 and `messages`.type='template' order by `messages`.created desc limit 1", (recipient_phone_number,))
+                message = cursor.fetchone()
             
             update_ts = int(status_update["timestamp"])
             new_status = status_update["status"]

@@ -11,13 +11,22 @@ class ChannelOut(BaseModel):
     id: int
     avatarUrl: str = "https://www.svgrepo.com/show/535711/user.svg"
     title: str
-    subtitle: str
+    subtitle: Optional[str]
     date: Optional[Union[date, time, datetime]]
     unread: bool
+
+class ChannelIn(BaseModel):
+
+    name: str
+    number: str
 
 class ChannelsOut(BaseModel):
 
     channels: list[ChannelOut]
+
+class CreateChannelOut(ChannelsOut):
+
+    new_channel_id: int
 
 class MessageOut(BaseModel):
 
@@ -32,3 +41,4 @@ class MessagesOut(BaseModel):
 
     messages: list[MessageOut]
     open: bool
+    empty_conversation: bool = False

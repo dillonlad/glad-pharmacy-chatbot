@@ -29,8 +29,10 @@ class DBHandler:
         if commit is True:
             self.commit()
 
-    def commit(self):
+    def commit(self, last_row_id = False):
         self._conn.commit()
+        if last_row_id is True:
+            return self._cursor.lastrowid
 
     def fetchall(self, stmnt: str):
         self._cursor.execute(stmnt)

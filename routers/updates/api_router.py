@@ -10,11 +10,12 @@ router = APIRouter()
 
 
 @router.get("/updates", response_model=UpdatesOut)
-async def get_updates(db_handler=Depends(verify_token)):
+async def get_updates(user=Depends(verify_token)):
     """
     Get all updates for WhatsApp, repeats, contact forms and enquiries.
     """
-
+    
+    db_handler = user.db_handler
     # Get latest shop orders
     wc_manager = WoocommerceManager(db_handler)
     orders_out = wc_manager.get_orders()

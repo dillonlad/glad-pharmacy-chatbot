@@ -55,12 +55,13 @@ def get_forms(db_handler: DBHandler, form_type: str):
 @router.get("/{form_type}/updates", response_model=dict[str, list[FormEntryOut]])
 async def get_form_updates(
     form_type: FormType, 
-    db_handler=Depends(verify_token),
+    user=Depends(verify_token),
 ):
     """
     Get the latest unread forms.
     """
 
+    db_handler = user.db_handler
     form_entry_updates = get_forms(db_handler, form_type)
 
     return {
@@ -71,12 +72,13 @@ async def get_form_updates(
 async def mark_form_read(
     form_type: FormType,
     form_id: int,
-    db_handler=Depends(verify_token),
+    user=Depends(verify_token),
 ):
     """
     Mark a form as 'read' so it's no longer an update.
     """
     
+    db_handler = user.db_handler
     form_entry_updates = get_forms(db_handler, form_type)
 
     db_handler.execute("UPDATE wp_form_entries set viewed=1 where id = %s" % (form_id,))

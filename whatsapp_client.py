@@ -485,7 +485,6 @@ class WhatsAppClient:
                             "UPDATE conversations set `read`=0, `preference`=%s where id = %s", (preference, conversation_id,)
                         )
                     self._db_handler._conn.commit()
-                    self._db_handler._conn.close()
                 
                     # 4️⃣ Handle Media Messages (Images, Videos, Audio, Documents)
                 elif message_type in ["image", "video", "document", "audio"]:
@@ -543,8 +542,9 @@ class WhatsAppClient:
                         )
 
                     self._db_handler._conn.commit()
-
-            webpush_client.send_push("New WhatsApp message", "You've received a new WhatsApp message from {}".format(profile_name))
+            
+                webpush_client.send_push("New WhatsApp message", "You've received a new WhatsApp message from {}".format(profile_name))
+            
             return {"statusCode": 200, "body": json.dumps({"message": "Message stored successfully"})}
 
         except Exception as e:

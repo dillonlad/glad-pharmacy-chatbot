@@ -21,7 +21,7 @@ class WebpushClient:
         self._db_handler = db_handler
         self._settings = WebpushSettings()
 
-    def send_push(self, title, body, sites=[]):
+    def send_push(self, title, body, uri, sites=[]):
 
         all_subs = self._db_handler.fetchall(
                 """
@@ -36,7 +36,7 @@ class WebpushClient:
 
         for sub in all_subs:
             try:
-                webpush(
+                resp = webpush(
                     subscription_info={
                         "endpoint": sub["endpoint"],
                         "keys": {
@@ -44,9 +44,16 @@ class WebpushClient:
                             "auth": sub["auth"]
                         }
                     },
-                    data=json.dumps({"title": title, "body": body}),
+                    data=json.dumps({
+                        "title": title, 
+                        "body": body,
+                        "icon": "/notification.png",
+                        "url": uri
+                        }),
                     vapid_private_key=self._settings.private_key,
                     vapid_claims=self._settings.vapid_claims,
                 )
+
+                print(resp.text)
             except:
                 print(traceback.format_exc())

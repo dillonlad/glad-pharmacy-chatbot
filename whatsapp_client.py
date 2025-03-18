@@ -543,7 +543,7 @@ class WhatsAppClient:
 
                     self._db_handler._conn.commit()
             
-                webpush_client.send_push("New WhatsApp message", "You've received a new WhatsApp message from {}".format(profile_name))
+                webpush_client.send_push("New WhatsApp message", "You have received a new WhatsApp message from {}".format(profile_name), "/whatsapp")
             
             return {"statusCode": 200, "body": json.dumps({"message": "Message stored successfully"})}
 

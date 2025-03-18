@@ -47,6 +47,6 @@ async def send_notifications():
     db_handler.start_session()
 
     webpush_client = WebpushClient(db_handler)
-    webpush_client.send_push("This is a notif", "from api")
+    webpush_client.send_push("This is a notif", "from api", "/whatsapp")
     db_handler.end_session()
     return {"success": True}

@@ -62,3 +62,38 @@ class S3Client:
                 )
         except:
             return ""
+        
+    def list_all_objects(self, folder_name):
+
+        response = self._s3_client.list_objects_v2(
+            Bucket=self._settings.form_uploads_bucket, 
+            Prefix=folder_name,
+            )
+        
+        objects = []
+        if 'Contents' in response:
+            for obj in response['Contents']:
+                objects.append(obj['Key'])  # Full object key (path)
+
+        return objects
+    
+    def get_object(self, key):
+
+        return self._s3_client.get_object(
+            Bucket=self._settings.form_uploads_bucket, 
+            Key=key,
+        )
+    
+    def put_object(self, key, content):
+
+        return self._s3_client.put_object(
+            Bucket=self._settings.form_uploads_bucket, 
+            Key=key,
+            Body=content,
+        )
+    
+    def delete_object(self, key):
+        return self._s3_client.delete_object(
+            Bucket=self._settings.form_uploads_bucket, 
+            Key=key,
+        )

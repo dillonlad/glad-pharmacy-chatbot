@@ -3,6 +3,7 @@ from auth import verify_token
 from wp_db_handler import DBHandler
 from woocommerce_manager import WoocommerceManager
 from whatsapp_client import WhatsAppClient
+from voicemail_manager import VoicemailManager
 from routers.updates.data_structures import UpdatesOut
 
 
@@ -22,6 +23,9 @@ async def get_updates(user=Depends(verify_token)):
     # Get latest whatsapp messages
     whatsapp_client = WhatsAppClient(db_handler)
     number_of_unread_whatsapps = whatsapp_client.get_unread_conversations()
+
+    voicemail_manager = VoicemailManager(db_handler)
+    number_of_unread_voicemails = voicemail_manager.get_total_unread_voicemails()
     
     sql = """
             SELECT `form_name`, COUNT(`id`) AS `unread_entries`
@@ -36,7 +40,8 @@ async def get_updates(user=Depends(verify_token)):
         orders=orders_out, 
         unread_whatsapps=number_of_unread_whatsapps, 
         repeats=repeats,
-        )
+        unread_voicemails=number_of_unread_voicemails,
+    )
 
 
 # Example root endpoint

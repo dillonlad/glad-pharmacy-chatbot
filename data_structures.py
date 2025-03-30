@@ -17,3 +17,4 @@ class OrderUpdateOut(BaseModel):
     email: Optional[str]
     items: list[ItemOut]
     created: datetime
+    

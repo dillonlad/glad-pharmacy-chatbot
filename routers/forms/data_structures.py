@@ -5,6 +5,7 @@ from enum import Enum
 class FormType(Enum):
 
     REPEATS="repeat-prescription-sign-up"
+    CONTACT="contact-form"
 
 class FormEntryOut(BaseModel):
 

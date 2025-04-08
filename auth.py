@@ -22,27 +22,56 @@ class CognitoSettings(BaseSettings):
     app_client_id: str
     algorithms: list[str] = ["RS256"]
 
-cognito_settings = CognitoSettings()
-client = boto3.client("cognito-idp", region_name=cognito_settings.region)
-
 security = HTTPBearer()
 
-# Fetch Cognito Public Keys
-def get_cognito_public_keys():
-    url = f"https://cognito-idp.{cognito_settings.region}.amazonaws.com/{cognito_settings.userpool_id}/.well-known/jwks.json"
-    response = requests.get(url)
-    return {key["kid"]: key for key in response.json()["keys"]}
+class CognitoClient:
 
-public_keys = get_cognito_public_keys()
+    def __init__(self):
+        self._settings = CognitoSettings()
+        self._client = boto3.client("cognito-idp", region_name=self._settings.region)
+
+    @property
+    def public_keys(self):
+        url = f"https://cognito-idp.{self._settings.region}.amazonaws.com/{self._settings.userpool_id}/.well-known/jwks.json"
+        response = requests.get(url)
+        return {key["kid"]: key for key in response.json()["keys"]}
+    
+    @property
+    def token_settings(self):
+        return {
+            "algorithms":self._settings.algorithms,
+            "audience":self._settings.app_client_id,
+            "issuer":f"https://cognito-idp.{self._settings.region}.amazonaws.com/{self._settings.userpool_id}",
+        }
+    
+    def admin_get_user(self, email):
+        return self._client.admin_get_user(UserPoolId=self._settings.userpool_id, Username=email)
+
+    def admin_list_groups_for_user(self, email):
+        return self._client.admin_list_groups_for_user(UserPoolId=self._settings.userpool_id, Username=email)
+    
+    def list_users_in_group(self, group_name):
+        print(group_name)
+        try:
+            return self._client.list_users_in_group(
+                UserPoolId=self._settings.userpool_id,
+                GroupName=group_name,
+                Limit=50,
+            )
+        except self._client.exceptions.InternalErrorException as e:
+            print(e.response)
+            return {}
 
 # Function to Verify JWT Token
 def verify_token(
         token: str = Security(security), 
         db_handler: DBHandler = Depends(DBHandler.get_session),
     ):
+
+    cognito_client = CognitoClient()
     try:
         headers = jwt.get_unverified_header(token.credentials)
-        key = public_keys.get(headers["kid"])
+        key = cognito_client.public_keys.get(headers["kid"])
 
         if not key:
             raise HTTPException(status_code=401, detail="Invalid token")
@@ -50,20 +79,32 @@ def verify_token(
         decoded_token = jwt.decode(
             token.credentials,
             RSAAlgorithm.from_jwk(json.dumps(key)),
-            algorithms=cognito_settings.algorithms,
-            audience=cognito_settings.app_client_id,
-            issuer=f"https://cognito-idp.{cognito_settings.region}.amazonaws.com/{cognito_settings.userpool_id}",
+            **cognito_client.token_settings,
         )
 
         email = decoded_token.get("email")
         sub = decoded_token.get("sub")
 
         # Check if the user is disabled
-        response = client.admin_get_user(UserPoolId=cognito_settings.userpool_id, Username=email)
+        response = cognito_client.admin_get_user(email)
         if response["Enabled"] == False:
             raise HTTPException(status_code=403, detail="User is disabled")
 
-        return CognitoUser(sub, db_handler)
+        user_attr = response.get("UserAttributes", [])
+        user_email = next((_attr["Value"] for _attr in user_attr if _attr["Name"] == "email"), None)
+        user_name = next((_attr["Value"] for _attr in user_attr if _attr["Name"] == "name"), None)
+
+        user_groups_response = cognito_client.admin_list_groups_for_user(email)
+        groups = user_groups_response.get("Groups", [])
+        is_admin = False
+        user_group_names = []
+        for group in groups:
+            if group["GroupName"] == "glad_admin":
+                is_admin = True
+            else:
+                user_group_names.append(group["GroupName"])
+
+        return CognitoUser(sub, user_email, user_name, is_admin, user_group_names, db_handler, cognito_client)
 
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")

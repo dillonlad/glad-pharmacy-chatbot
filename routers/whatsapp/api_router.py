@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 import phonenumbers
 
-from routers.whatsapp.data_structures import MessageRequest, ChannelsOut, MessagesOut, ChannelIn, CreateChannelOut
+from routers.whatsapp.data_structures import MessageRequest, ChannelsOut, MessagesOut, ChannelIn, CreateChannelOut, UpdateChannel
 from auth import verify_token
 from whatsapp_client import WhatsAppClient
 from wp_db_handler import DBHandler
@@ -64,6 +64,28 @@ async def create_channel(
         "new_channel_id": new_row,
     }
 
+
+@router.put("/channel", response_model=ChannelsOut)
+async def update_channel(
+    channel_id: int, 
+    params: UpdateChannel,
+    user=Depends(verify_token)
+):
+
+    db_handler = user.db_handler
+
+    channel_sql = "select id from conversations where id=%s and active=1" % (channel_id,)
+    existing_channel = db_handler.fetchone(channel_sql)
+    if existing_channel is None:
+        raise HTTPException(status_code=404, detail="Channel not found.")
+    
+    update_sql = "update conversations set profile_name='%s' where id=%s" % (params.title, channel_id,)
+    db_handler.execute(update_sql, True)
+
+    whatsapp_client = WhatsAppClient(db_handler)
+    channels = whatsapp_client.get_channels()
+
+    return channels
 
 
 @router.get("/conversation/{id}/", response_model=MessagesOut)

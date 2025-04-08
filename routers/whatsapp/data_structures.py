@@ -6,6 +6,10 @@ class MessageRequest(BaseModel):
     type: str = "text"
     message: str
 
+class UpdateChannel(BaseModel):
+
+    title: str
+
 class ChannelOut(BaseModel):
 
     id: int

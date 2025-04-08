@@ -7,3 +7,12 @@ class Event(BaseModel):
     end: datetime
     title: str
     id: int
+    background_colour: str
+    status: str
+    can_delete: bool = False
+    site: str
+    notes: str
+
+class NotesIn(BaseModel):
+
+    notes: str

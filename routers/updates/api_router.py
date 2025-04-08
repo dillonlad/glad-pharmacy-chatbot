@@ -43,6 +43,8 @@ async def get_updates(user=Depends(verify_token)):
         repeats=repeats,
         contact_forms=contact_forms,
         unread_voicemails=number_of_unread_voicemails,
+        is_admin=user.is_admin,
+        sites=user.groups,
     )
 
 

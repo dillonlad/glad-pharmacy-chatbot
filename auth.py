@@ -56,7 +56,7 @@ class CognitoClient:
             return self._client.list_users_in_group(
                 UserPoolId=self._settings.userpool_id,
                 GroupName=group_name,
-                Limit=1,
+                Limit=50,
             )
         except self._client.exceptions.InternalErrorException as e:
             print(e.response)

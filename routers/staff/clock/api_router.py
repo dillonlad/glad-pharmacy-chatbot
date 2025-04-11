@@ -40,7 +40,8 @@ async def book_leave(
         raise HTTPException(status_code=400, detail="Overlaps existing schedule.")
     
     title = f"{event_type['description']} - {user.name}"
-    calendar_sql = "INSERT INTO calendar (event_type_id, user_sub, title, start, end, status, added_by, site, notes) VALUES (%s, '%s', '%s', '%s', '%s', 'Pending', '%s', '%s', '%s')" % (event_type["id"], user_sub, title, start, end, user.sub, user.groups[0], params.notes,)
+    _site = user.groups[0] if len(user.groups) == 1 else "all"
+    calendar_sql = "INSERT INTO calendar (event_type_id, user_sub, title, start, end, status, added_by, site, notes) VALUES (%s, '%s', '%s', '%s', '%s', 'Pending', '%s', '%s', '%s')" % (event_type["id"], user_sub, title, start, end, user.sub, _site, params.notes,)
     db_handler.execute(calendar_sql, True)
 
     calendar_manager = CalendarManager(db_handler)

@@ -13,7 +13,6 @@ class CalendarManager:
         sql = "select calendar.id, calendar.notes, calendar.title, calendar.site, calendar.status, calendar.start, calendar.end, event_types.background_colour, calendar.user_sub, calendar.added_by " \
           "from calendar inner join event_types on calendar.event_type_id=event_types.id and calendar.status != 'Rejected'" \
           " and calendar.site in ({})".format(",".join(["'{}'".format(group_name) for group_name in user.groups]))
-        print(sql)
 
         events = self._db_handler.fetchall(sql)
         tz_events = []

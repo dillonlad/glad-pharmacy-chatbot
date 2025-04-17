@@ -61,6 +61,14 @@ class CognitoClient:
         except self._client.exceptions.InternalErrorException as e:
             print(e.response)
             return {}
+        
+    def update_user_attributes(self, username, new_attrs):
+
+        self._client.admin_update_user_attributes(
+            UserPoolId=self._settings.userpool_id,
+            Username=username,
+            UserAttributes=new_attrs
+        )
 
 # Function to Verify JWT Token
 def verify_token(

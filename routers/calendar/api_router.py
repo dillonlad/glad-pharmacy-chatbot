@@ -48,7 +48,7 @@ async def delete_event(event_id: int, user = Depends(verify_token)):
         raise HTTPException(status_code=404, detail="Event does not exist.")
     
     authorised = False
-    if user.is_admin is False:
+    if user.is_admin is True:
         authorised = True
     elif event["user_sub"] == user.sub:
         authorised = True

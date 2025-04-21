@@ -18,6 +18,7 @@ class ChannelOut(BaseModel):
     subtitle: Optional[str]
     date: Optional[Union[date, time, datetime]]
     unread: bool
+    profile_name: str
 
 class ChannelIn(BaseModel):
 
@@ -27,6 +28,15 @@ class ChannelIn(BaseModel):
 class ChannelsOut(BaseModel):
 
     channels: list[ChannelOut]
+
+class Template(BaseModel):
+
+    id: int
+    name: str
+    description: str
+    params: list[str]
+    title: str
+    message_preview: Optional[str]
 
 class CreateChannelOut(ChannelsOut):
 

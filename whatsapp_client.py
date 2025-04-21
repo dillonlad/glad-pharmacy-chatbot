@@ -254,7 +254,7 @@ class WhatsAppClient:
         """
         
         sql = """
-                select conversations.id, conversations.profile_name as `title`, top_message.created as `date`, case when top_message.message is not null and top_message.message != '' then top_message.message when top_message.metadata is not null then 'Multimedia' else 'No Messages' end as `subtitle`, conversations.read
+                select conversations.id, conversations.profile_name, conversations.display_name as `title`, top_message.created as `date`, case when top_message.message is not null and top_message.message != '' then top_message.message when top_message.metadata is not null then 'Multimedia' else 'No Messages' end as `subtitle`, conversations.read
                 from conversations
                 left outer join (
                 SELECT m1.conversation_id, m1.message, m1.metadata, m1.created
@@ -450,8 +450,8 @@ class WhatsAppClient:
                     self._logger.debug("Adding new conversation.")
                     # 2️⃣ If not found, create a new conversation
                     cursor.execute(
-                        "INSERT INTO conversations (phone_number, profile_name) VALUES (%s, %s)",
-                        (phone_number, profile_name)
+                        "INSERT INTO conversations (phone_number, profile_name, display_name) VALUES (%s, %s, %s)",
+                        (phone_number, profile_name, profile_name)
                     )
                     self._db_handler._conn.commit()
                     conversation_id = cursor.lastrowid

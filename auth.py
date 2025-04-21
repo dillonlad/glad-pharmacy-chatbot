@@ -51,7 +51,7 @@ class CognitoClient:
         return self._client.admin_list_groups_for_user(UserPoolId=self._settings.userpool_id, Username=email)
     
     def list_users_in_group(self, group_name):
-        print(group_name)
+
         try:
             return self._client.list_users_in_group(
                 UserPoolId=self._settings.userpool_id,

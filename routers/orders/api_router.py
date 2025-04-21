@@ -42,7 +42,7 @@ async def cancel_order(
     }
 
 @router.post("/complete-order", response_model=dict[str, list[OrderUpdateOut]])
-async def cancel_order(
+async def complete_order(
     transaction_id: str,
     user=Depends(verify_token)
 ):

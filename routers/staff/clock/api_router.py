@@ -39,7 +39,22 @@ async def book_leave(
     if existing_calendar is not None:
         raise HTTPException(status_code=400, detail="Overlaps existing schedule.")
     
-    title = f"{event_type['description']} - {user.name}"
+    if user.sub != user_sub:
+        response = user.cognito_client.list_users()
+        cognito_users = response.get("Users", None)
+        if cognito_users is None:
+            raise HTTPException(status_code=403, detail="No users")
+        matching_user = next(
+                _user for _user in cognito_users
+                if any(attr["Name"] == "sub" and attr["Value"] == user_sub for attr in _user["Attributes"])
+            )
+
+        user_attr = matching_user.get("Attributes", [])
+        user_name = next((_attr["Value"] for _attr in user_attr if _attr["Name"] == "name"), None)
+    else:
+        user_name = user.name
+
+    title = f"{event_type['description']} - {user_name}"
     _site = user.groups[0] if len(user.groups) == 1 else "all"
     calendar_sql = "INSERT INTO calendar (event_type_id, user_sub, title, start, end, status, added_by, site, notes) VALUES (%s, '%s', '%s', '%s', '%s', 'Pending', '%s', '%s', '%s')" % (event_type["id"], user_sub, title, start, end, user.sub, _site, params.notes,)
     db_handler.execute(calendar_sql, True)

@@ -62,6 +62,17 @@ class CognitoClient:
             print(e.response)
             return {}
         
+    def list_users(self):
+
+        try:
+            return self._client.list_users(
+                UserPoolId=self._settings.userpool_id,
+                Limit=50,
+            )
+        except self._client.exceptions.InternalErrorException as e:
+            print(e.response)
+            return {}
+        
     def update_user_attributes(self, username, new_attrs):
 
         self._client.admin_update_user_attributes(

@@ -12,6 +12,7 @@ class Event(BaseModel):
     can_delete: bool = False
     site: str
     notes: str
+    type: str
 
 class NotesIn(BaseModel):
 

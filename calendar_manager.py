@@ -10,7 +10,7 @@ class CalendarManager:
 
     def get_all_events(self, user):
 
-        sql = "select calendar.id, calendar.notes, calendar.title, calendar.site, calendar.status, calendar.start, calendar.end, event_types.background_colour, calendar.user_sub, calendar.added_by " \
+        sql = "select calendar.id, calendar.notes, calendar.title, calendar.site, calendar.status, calendar.start, calendar.end, event_types.background_colour, event_types.name as `type`, calendar.user_sub, calendar.added_by " \
           "from calendar inner join event_types on calendar.event_type_id=event_types.id and calendar.status != 'Rejected'" \
           " and calendar.site in ('all', {})".format(",".join(["'{}'".format(group_name) for group_name in user.groups]))
 

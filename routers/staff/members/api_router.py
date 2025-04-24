@@ -20,7 +20,7 @@ async def get_staff_members(
 @router.put("/", response_model=MembersOut)
 async def edit_staff_member(
     username: str,
-    params: dict[EditableAttribute, Union[int, str]],
+    params: dict[EditableAttribute, Union[int, float, str]],
     user=Depends(verify_token)
 ):
     
@@ -30,6 +30,7 @@ async def edit_staff_member(
     updated_attributes = {
         attr.value: attr_value
         for attr, attr_value in params.items()
+        if attr_value not in [None, ""]
     }
     formatted_attrs = [{"Name": f"custom:{k}" if k not in ["name", "sub", "email"] else k, "Value": v} for k, v in updated_attributes.items()]
 

@@ -27,13 +27,13 @@ class CognitoUser:
 
         calendar_results = []
         if add_calendar is True:
-            
+            # Annual leave year starts from April.
             sql = """
                     select calendar.user_sub, event_types.name, sum(calendar.days) as `days`
                     from calendar
                     inner join event_types on calendar.event_type_id = event_types.id
                     where calendar.status='Approved'
-                    and year(calendar.start) = year(current_date)
+                    and month(calendar.end) >= 4
                     group by calendar.user_sub, event_types.name
                   """
             calendar_results = self.db_handler.fetchall(sql)
@@ -54,7 +54,7 @@ class CognitoUser:
                         "sub": _user_sub,
                         "email": next((user_attr["Value"] for user_attr in _user.get("Attributes", []) if user_attr["Name"] == "email"), ""),
                         "name": next((user_attr["Value"] for user_attr in _user.get("Attributes", []) if user_attr["Name"] == "name"), ""),
-                        "al_entitlement": al_entitlement,
+                        "al_entitlement": float(al_entitlement),
                         "al_used": float(al_used),
                         "al_remaining": float(al_entitlement) - float(al_used),
                         "sickness_used": float(sickness_used),

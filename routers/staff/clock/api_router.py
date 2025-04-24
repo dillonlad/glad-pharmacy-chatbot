@@ -4,7 +4,7 @@ from auth import verify_token
 from calendar_manager import CalendarManager
 from routers.staff.clock.data_structures import Leave, LeaveOut, LeaveDecision, NotesIn
 from wp_db_handler import DBHandler
-
+import math
 
 router = APIRouter(prefix="/clock")
 
@@ -19,17 +19,18 @@ async def book_leave(
     db_handler: DBHandler = user.db_handler
     if user_sub is None:
         user_sub = user.sub
-
-    users_sql = "SELECT id, site_id from dashboard_users where active=1 and `sub`='%s'" % (user_sub,)
-    dashboard_user = db_handler.fetchone(users_sql)
-
-    if dashboard_user is None:
-        raise HTTPException(status_code=404, detail="No user found.")
     
     event_type_sql = "SELECT id, description from event_types where name = '%s'" % (params.type,)
     event_type = db_handler.fetchone(event_type_sql)
     if event_type is None:
         raise HTTPException(status_code=404, detail="No event type found.")
+    
+    date_diff = params.end - params.start
+
+    number_seconds = date_diff.seconds
+    number_of_days = number_seconds / 86400
+    days_taken = math.ceil(number_of_days * 2) / 2
+    days_taken = float(date_diff.days) + days_taken
     
     start = params.start.strftime("%y-%m-%d %H:%M")
     end = params.end.strftime("%y-%m-%d %H:%M")
@@ -44,19 +45,22 @@ async def book_leave(
         cognito_users = response.get("Users", None)
         if cognito_users is None:
             raise HTTPException(status_code=403, detail="No users")
-        matching_user = next(
+        matching_user = next((
                 _user for _user in cognito_users
                 if any(attr["Name"] == "sub" and attr["Value"] == user_sub for attr in _user["Attributes"])
-            )
+            ), None)
 
-        user_attr = matching_user.get("Attributes", [])
-        user_name = next((_attr["Value"] for _attr in user_attr if _attr["Name"] == "name"), None)
+        if matching_user: 
+            user_attr = matching_user.get("Attributes", [])
+            user_name = next((_attr["Value"] for _attr in user_attr if _attr["Name"] == "name"), None)
+        else:
+            user_name = user.name
     else:
         user_name = user.name
 
     title = f"{event_type['description']} - {user_name}"
     _site = user.groups[0] if len(user.groups) == 1 else "all"
-    calendar_sql = "INSERT INTO calendar (event_type_id, user_sub, title, start, end, status, added_by, site, notes) VALUES (%s, '%s', '%s', '%s', '%s', 'Pending', '%s', '%s', '%s')" % (event_type["id"], user_sub, title, start, end, user.sub, _site, params.notes,)
+    calendar_sql = "INSERT INTO calendar (event_type_id, user_sub, title, start, end, status, added_by, site, notes, days) VALUES (%s, '%s', '%s', '%s', '%s', 'Pending', '%s', '%s', '%s', %s)" % (event_type["id"], user_sub, title, start, end, user.sub, _site, params.notes, days_taken,)
     db_handler.execute(calendar_sql, True)
 
     calendar_manager = CalendarManager(db_handler)

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Annual Leave Request Notification</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    .header {
+      background-color: #6dbe6b;
+      color: #ffffff;
+      padding: 20px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+    .content {
+      padding: 30px;
+      color: #333333;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .highlight {
+      background-color: #f0f9ef;
+      border-left: 4px solid #6dbe6b;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+      color: #999999;
+    }
+    a.button {
+      display: inline-block;
+      padding: 10px 20px;
+      margin-top: 20px;
+      background-color: #6dbe6b;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Annual Leave Request</h1>
+    </div>
+    <div class="content">
+      <p>Hi {{admin_name}},</p>
+      <p>We wanted to let you know that a member of your team has submitted a new annual leave request.</p>
+      
+      <div class="highlight">
+        <strong>Staff Member:</strong> {{staff_name}}<br>
+        <strong>Requested Dates:</strong> {{start_date}} to {{end_date}}<br>
+        <strong>Notes:</strong> {{notes}}
+      </div>
+
+      <p>You can review and manage this request in your staff portal.</p>
+
+      <a href="{{portal_link}}" class="button">Review Request</a>
+    </div>
+    <div class="footer">
+      © 2025 G.M. Lad Ltd. All rights reserved.
+    </div>
+  </div>
+</body>
+</html>

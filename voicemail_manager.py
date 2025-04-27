@@ -37,6 +37,38 @@ class VoicemailManager:
     def get_total_unread_voicemails(self):
         voicemails = self._db_handler.fetchone("""SELECT COUNT(id) as `count` from `voicemails` where `read`=0""")
         return voicemails["count"]
+    
+    def regenerate_voicemails(self):
+        """
+        Regenerate presigned URLs.
+        """
+
+        voicemails = self._db_handler.fetchall("""
+                                SELECT sites.name as `site_name`, inboxes.name as `inbox_name`, vmails.number, vmails.filename, vmails.presigned_url, vmails.expiry, vmails.created, vmails.id as `voicemail_id`
+                                FROM dashboard_sites sites
+                                INNER JOIN voicemail_inboxes inboxes ON sites.id = inboxes.site_id
+                                INNER JOIN voicemails vmails on inboxes.id = vmails.inbox_id
+                                WHERE vmails.read = 0
+                                """)
+        
+        unread_voicemails = {}
+        current_timestamp = int(datetime.now(tz=utc).timestamp())
+        for voicemail in voicemails:
+
+            return_voicemail = voicemail
+            if voicemail["inbox_name"] not in unread_voicemails:
+                unread_voicemails[voicemail["inbox_name"]] = []
+
+            presigned_url = self._s3_client.get_form_presigned_url(voicemail["filename"])
+            return_voicemail["presigned_url"] = presigned_url
+            url_expiry = current_timestamp + self._s3_client.presigned_url_expiry
+            update_sql = "UPDATE voicemails set presigned_url='%s', expiry=%s where id=%s" % (presigned_url, url_expiry, voicemail["voicemail_id"],)
+            self._db_handler.execute(update_sql, True)
+
+            unread_voicemails[voicemail["inbox_name"]].append(return_voicemail)
+
+        return unread_voicemails
+
 
     def get_all_unread_voicemails(self, exclude_id = None):
         """
@@ -74,7 +106,7 @@ class VoicemailManager:
                 self._db_handler.execute(update_sql, True)
 
             if (exclude_id is not None and voicemail["voicemail_id"] != exclude_id) or exclude_id is None:
-                unread_voicemails[voicemail["inbox_name"]].append(voicemail)
+                unread_voicemails[voicemail["inbox_name"]].append(return_voicemail)
 
         return unread_voicemails
 

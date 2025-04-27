@@ -23,6 +23,7 @@ class ChannelOut(BaseModel):
 class ChannelIn(BaseModel):
 
     name: str
+    display_name: str
     number: str
 
 class ChannelsOut(BaseModel):

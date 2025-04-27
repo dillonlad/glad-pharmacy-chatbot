@@ -1,52 +1,40 @@
-import pandas as pd
 import boto3
-from botocore.exceptions import ClientError
+import os
 
-# Replace with your Cognito User Pool ID
-USER_POOL_ID = 'eu-west-2_kvNlJXgmz'
+# --- CONFIGURATION ---
+TEMPLATE_NAME = "AnnualLeaveRejected"
+HTML_FILE_PATH = "C:\\Users\\Dillon\\OneDrive\\Documents\\GitHub\\glad-pharmacy-chatbot\\email_templates\\annual_leave_rejected.html"
+SUBJECT = "Your Annual Leave Was Rejected"
 
-# Read the Excel file
-df = pd.read_excel("C:\\Users\\Dillon\\OneDrive\\Desktop\\Staff - Dillon.xlsx", header=None)  # Replace with your file path
+# --- Load HTML content ---
+if not os.path.exists(HTML_FILE_PATH):
+    raise FileNotFoundError(f"Could not find {HTML_FILE_PATH}")
 
-# Initialize Cognito client
-client = boto3.client('cognito-idp')
+with open(HTML_FILE_PATH, 'r', encoding='utf-8') as f:
+    html_content = f.read()
 
+# --- Create SES client ---
+ses = boto3.client('ses', region_name='eu-west-2')  # Change region if needed
 
-def format_name(name):
-    return name.lower().title()
-
-def update_user_attribute():
-    try:
-        # # Check if user exists
-        # client.admin_get_user(
-        #     UserPoolId=USER_POOL_ID,
-        #     Username=username
-        # )
-
-        client.add_custom_attributes(
-        UserPoolId=USER_POOL_ID,
-        CustomAttributes=[
-            {
-                'Name': 'al_entitlement',
-                'AttributeDataType': 'Number',  # Use 'String' if needed
-                'Mutable': True,
-                'Required': False,
-                'NumberAttributeConstraints': {
-                    'MinValue': '0',
-                    'MaxValue': '100'
-                }
-            }
-        ]
+# --- Upload template ---
+try:
+    response = ses.create_template(
+        Template={
+            'TemplateName': TEMPLATE_NAME,
+            'SubjectPart': SUBJECT,
+            'HtmlPart': html_content,
+            'TextPart': 'Your requested leave from {{start_date}} to {{end_date}} was rejected.'
+        }
     )
-
-    except ClientError as e:
-        print(e)
-
-# # Iterate through the rows
-# for index, row in df.iterrows():
-#     username = str(row[7]).strip()  # Column H
-#     raw_name = str(row[2]).strip()  # Column C
-
-#     if username and raw_name and username != 'nan':
-#         formatted_name = format_name(raw_name)
-update_user_attribute()
+    print("Template created successfully:", response)
+except ses.exceptions.TemplateNameAlreadyExistsException:
+    print(f"Template '{TEMPLATE_NAME}' already exists. Updating it...")
+    response = ses.update_template(
+        Template={
+            'TemplateName': TEMPLATE_NAME,
+            'SubjectPart': SUBJECT,
+            'HtmlPart': html_content,
+            'TextPart': 'Your requested leave from {{start_date}} to {{end_date}} was rejected.'
+        }
+    )
+    print("Template updated successfully:", response)

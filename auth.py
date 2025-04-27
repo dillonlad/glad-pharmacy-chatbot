@@ -81,6 +81,21 @@ class CognitoClient:
             UserAttributes=new_attrs
         )
 
+    def get_user_from_sub(self, user_sub):
+
+        response = self.list_users()
+        cognito_users = response.get("Users", None)
+
+        if cognito_users is None:
+            raise HTTPException(status_code=403, detail="No users")
+        
+        matching_user = next((
+                _user for _user in cognito_users
+                if any(attr["Name"] == "sub" and attr["Value"] == user_sub for attr in _user["Attributes"])
+            ), None)
+        
+        return matching_user
+
 # Function to Verify JWT Token
 def verify_token(
         token: str = Security(security), 

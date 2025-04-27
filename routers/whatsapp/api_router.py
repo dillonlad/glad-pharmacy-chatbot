@@ -71,7 +71,7 @@ async def create_channel(
         raise HTTPException(status_code=550, detail="Phone number exists.")
     
     db_handler.execute(
-        "INSERT INTO `conversations` (phone_number, profile_name, `read`) VALUES ('%s', '%s', 1)" % (whatsapp_number, params.name,)
+        "INSERT INTO `conversations` (phone_number, profile_name, display_name, `read`) VALUES ('%s', '%s', '%s', 1)" % (whatsapp_number, params.name, params.display_name,)
     )
     new_row = db_handler.commit(last_row_id = True)
 

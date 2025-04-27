@@ -21,6 +21,21 @@ class CognitoUser:
         self.db_handler = db_handler
         self.cognito_client = cognito_client
 
+    def get_users_manager(self):
+
+        admin_users_response = self.cognito_client.list_users_in_group("glad_admin")
+        admin_users = admin_users_response.get("Users", [])
+        users_managers = []
+        for _user in admin_users:
+            _user_sub = next((user_attr["Value"] for user_attr in _user.get("Attributes", []) if user_attr["Name"] == "sub"), "")
+            if self.is_colleague(_user_sub) is True:
+                users_managers.append({
+                    "sub": _user_sub,
+                    "email": next((user_attr["Value"] for user_attr in _user.get("Attributes", []) if user_attr["Name"] == "email"), ""),
+                    "name": next((user_attr["Value"] for user_attr in _user.get("Attributes", []) if user_attr["Name"] == "name"), ""),
+                })
+        return users_managers
+
     def get_colleagues(self, add_calendar = False):
 
         members = []

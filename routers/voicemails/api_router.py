@@ -19,6 +19,16 @@ async def get_voicemails(user=Depends(verify_token)):
         "voicemails": voicemail_manager.get_all_unread_voicemails()
         }
 
+@router.post("/regenerate", response_model=dict[str, dict[str, list[VoicemailOut]]])
+async def regenerate_voicemails(
+    db_handler = Depends(DBHandler.get_session),
+):
+    
+    voicemail_manager = VoicemailManager(db_handler)
+    return {
+        "voicemails": voicemail_manager.regenerate_voicemails()
+        }
+
 @router.post("/mark-read", response_model=dict[str, dict[str, list[VoicemailOut]]])
 async def mark_voicemail_read(
     voicemail_id: int,

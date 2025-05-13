@@ -55,7 +55,7 @@ class VoicemailManager:
         current_timestamp = int(datetime.now(tz=utc).timestamp())
         for voicemail in voicemails:
 
-            return_voicemail = voicemail
+            return_voicemail = voicemail.copy()
             if voicemail["inbox_name"] not in unread_voicemails:
                 unread_voicemails[voicemail["inbox_name"]] = []
 
@@ -86,11 +86,11 @@ class VoicemailManager:
         current_timestamp = int(datetime.now(tz=utc).timestamp())
         for voicemail in voicemails:
 
-            return_voicemail = voicemail
+            return_voicemail = voicemail.copy()
             if voicemail["inbox_name"] not in unread_voicemails:
                 unread_voicemails[voicemail["inbox_name"]] = []
 
-            if voicemail["presigned_url"]  is not None:
+            if voicemail["presigned_url"] is not None:
                 if current_timestamp < voicemail["expiry"]:
                     return_voicemail["presigned_url"] = voicemail["presigned_url"]
                 else:

@@ -159,3 +159,4 @@ async def confirm_leave(
     return {
         "events": calendar_manager.get_all_events(user),
         }
+

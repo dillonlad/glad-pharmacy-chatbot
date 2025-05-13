@@ -1,4 +1,5 @@
 import pytz
+from datetime import datetime
 
 from wp_db_handler import DBHandler
 
@@ -7,6 +8,10 @@ class CalendarManager:
 
     def __init__(self, db_handler: DBHandler):
         self._db_handler = db_handler
+
+    @staticmethod
+    def first_datetime_of_month(year: int, month: int) -> datetime:
+        return datetime(year=year, month=month, day=1, tzinfo=pytz.timezone("Europe/London")).astimezone(pytz.timezone("utc"))
 
     def get_all_events(self, user):
 

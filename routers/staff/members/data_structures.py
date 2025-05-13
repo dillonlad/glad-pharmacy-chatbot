@@ -11,7 +11,7 @@ class Member(BaseModel):
     al_entitlement: float = 25.0
     al_used: float = 0.0
     al_remaining: float = 25.0
-    sickness_used: int = 0
+    sickness_used: float = 0
     username: str
 
 class MembersOut(BaseModel):

@@ -83,27 +83,14 @@ class VoicemailManager:
                                   WHERE vmails.read = 0
                                   """)
         unread_voicemails = {}
-        current_timestamp = int(datetime.now(tz=utc).timestamp())
+
         for voicemail in voicemails:
 
             return_voicemail = voicemail.copy()
             if voicemail["inbox_name"] not in unread_voicemails:
                 unread_voicemails[voicemail["inbox_name"]] = []
 
-            if voicemail["presigned_url"] is not None:
-                if current_timestamp < voicemail["expiry"]:
-                    return_voicemail["presigned_url"] = voicemail["presigned_url"]
-                else:
-                    presigned_url = self._s3_client.get_form_presigned_url(voicemail["filename"])
-                    return_voicemail["presigned_url"] = presigned_url
-                    update_sql = "UPDATE voicemails set presigned_url='%s' where id=%s" % (presigned_url, voicemail["voicemail_id"],)
-                    self._db_handler.execute(update_sql, True)
-            else:
-                presigned_url = self._s3_client.get_form_presigned_url(voicemail["filename"])
-                return_voicemail["presigned_url"] = presigned_url
-                url_expiry = current_timestamp + self._s3_client.presigned_url_expiry
-                update_sql = "UPDATE voicemails set presigned_url='%s', expiry=%s where id=%s" % (presigned_url, url_expiry, voicemail["voicemail_id"],)
-                self._db_handler.execute(update_sql, True)
+            return_voicemail["presigned_url"] = voicemail["presigned_url"]
 
             if (exclude_id is not None and voicemail["voicemail_id"] != exclude_id) or exclude_id is None:
                 unread_voicemails[voicemail["inbox_name"]].append(return_voicemail)
@@ -172,13 +159,14 @@ class VoicemailManager:
                             key=attachment_key,
                             content=attachment_content
                         )
+                        presigned_url = self._s3_client.get_form_presigned_url(attachment_key)
                         voicemail_inbox = next((_inbox for _inbox in inboxes if int(_inbox["extension"]) == int(extension)), None)
                         if voicemail_inbox is None:
                             self._logger.debug("Couldn't find inbox")
                             continue
 
                         site_voicemails[voicemail_inbox["site_name"]] += 1
-                        self._db_handler.execute("INSERT INTO voicemails (inbox_id, number, filename) values (%s, '%s', '%s')" % (voicemail_inbox["id"], phone_number, attachment_key))
+                        self._db_handler.execute("INSERT INTO voicemails (inbox_id, number, filename presigned_url) values (%s, '%s', '%s', '%s')" % (voicemail_inbox["id"], phone_number, attachment_key, presigned_url))
                         self._db_handler.commit()
                         self._logger.debug(f"Saved attachment: {filename} to glad-voicemail")
             

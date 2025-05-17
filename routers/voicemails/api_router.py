@@ -4,7 +4,6 @@ from pytz import utc
 
 from wp_db_handler import DBHandler
 from auth import verify_token
-from s3_client import S3Client
 from routers.voicemails.data_structures import VoicemailOut
 from voicemail_manager import VoicemailManager
 

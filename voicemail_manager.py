@@ -166,7 +166,7 @@ class VoicemailManager:
                             continue
 
                         site_voicemails[voicemail_inbox["site_name"]] += 1
-                        self._db_handler.execute("INSERT INTO voicemails (inbox_id, number, filename presigned_url) values (%s, '%s', '%s', '%s')" % (voicemail_inbox["id"], phone_number, attachment_key, presigned_url))
+                        self._db_handler.execute("INSERT INTO voicemails (inbox_id, number, filename, presigned_url) values (%s, '%s', '%s', '%s')" % (voicemail_inbox["id"], phone_number, attachment_key, presigned_url,))
                         self._db_handler.commit()
                         self._logger.debug(f"Saved attachment: {filename} to glad-voicemail")
             

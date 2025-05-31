@@ -1,4 +1,6 @@
 from enum import Enum
+from datetime import datetime
+import pytz
 
 
 class EditableAttribute(Enum):
@@ -40,6 +42,25 @@ class CognitoUser:
 
         members = []
 
+        # Define timezone
+        tz = pytz.timezone('Europe/London')
+        # Get current date in Europe/London
+        now = datetime.now(tz)
+
+        # Determine most recent April 1st
+        if now.month >= 4:
+            april_start_date = datetime(now.year, 4, 1, 0, 0, tzinfo=tz)
+        else:
+            april_start_date = datetime(now.year - 1, 4, 1, 0, 0, tzinfo=tz)
+
+        current_month_start_dt = datetime(now.year, now.month, 1, 0, 0, tzinfo=tz)
+
+        # Convert to UTC
+        recent_april_utc = april_start_date.astimezone(pytz.UTC)
+
+        # repeat sql query for month
+        recent_month_utc = current_month_start_dt.astimezone(pytz.UTC)
+
         calendar_results = []
         if add_calendar is True:
             # Annual leave year starts from April.
@@ -48,10 +69,21 @@ class CognitoUser:
                     from calendar
                     inner join event_types on calendar.event_type_id = event_types.id
                     where calendar.status='Approved'
-                    and month(calendar.end) >= 4
+                    and calendar.start >= '%s'
                     group by calendar.user_sub, event_types.name
-                  """
+                  """ % (recent_april_utc,)
+            
             calendar_results = self.db_handler.fetchall(sql)
+
+            month_sql = """
+                    select calendar.user_sub, event_types.name, sum(calendar.days) as `days`
+                    from calendar
+                    inner join event_types on calendar.event_type_id = event_types.id
+                    where calendar.status='Approved'
+                    and calendar.end >= '%s'
+                    group by calendar.user_sub, event_types.name
+                  """ % (recent_month_utc,)
+            print(month_sql)
 
         added_user_subs = []
         for group in self.groups:

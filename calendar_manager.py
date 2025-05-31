@@ -1,6 +1,7 @@
 import pytz
 from datetime import datetime
 
+from auth import CognitoClient
 from wp_db_handler import DBHandler
 
 
@@ -31,3 +32,27 @@ class CalendarManager:
                 new_event["can_delete"] = True
 
         return tz_events
+    
+    def report_generator(self, cognito_client: CognitoClient, year: int, month: int):
+
+        tz = pytz.timezone('Europe/London')
+
+        month_start_dt = datetime(year, month, 1, 0, 0, tzinfo=tz)
+
+        # repeat sql query for month
+        month_utc = month_start_dt.astimezone(pytz.UTC)
+
+        sql = """
+                select * from calendar
+                where end >= '%s'
+              """ % (month_utc,)
+        
+        events = self._db_handler.fetchall(sql)
+
+        all_users = cognito_client.list_users()
+
+        return {
+            "events": events,
+            "users": all_users,
+        }
+        

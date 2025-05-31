@@ -1,5 +1,9 @@
-from fastapi import APIRouter, BackgroundTasks
+from datetime import datetime, timedelta
+from fastapi import APIRouter, BackgroundTasks, Depends
+import pytz
 
+from auth import CognitoClient, verify_api_key
+from calendar_manager import CalendarManager
 from wp_db_handler import DBHandler
 from whatsapp_client import WhatsAppClient
 from sqs_client import SQSClient
@@ -31,6 +35,23 @@ async def process_queue(background_tasks: BackgroundTasks):
     return {
         "Status": "Ok"
     }
+
+@router.get("/get-all-events")
+async def get_all_events(db_handler: DBHandler = Depends(verify_api_key)):
+    """
+    Get all of the events needed to generate a report for the last month.
+    """
+
+
+    tz = pytz.timezone('Europe/London')
+        # Get current date in Europe/London
+    now = datetime.now(tz)
+
+    yesterday_dt = now - timedelta(days=1)
+    calendar_manager = CalendarManager(db_handler)
+    cognito_client = CognitoClient()
+
+    return calendar_manager.report_generator(cognito_client, yesterday_dt.year, yesterday_dt.month)
 
 @router.get("/s3-extract")
 async def s3_extract(object_key:str):

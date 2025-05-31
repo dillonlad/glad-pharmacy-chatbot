@@ -1,7 +1,7 @@
 import json
 import requests
 from fastapi import Depends, HTTPException, Security
-from fastapi.security import HTTPBearer
+from fastapi.security import HTTPBearer, APIKeyHeader
 from pydantic_settings import BaseSettings
 import jwt
 from jwt.algorithms import RSAAlgorithm
@@ -21,8 +21,10 @@ class CognitoSettings(BaseSettings):
     region: str
     app_client_id: str
     algorithms: list[str] = ["RS256"]
+    lambda_api_key: str
 
 security = HTTPBearer()
+header_scheme = APIKeyHeader(name="x-access-key")
 
 class CognitoClient:
 
@@ -95,6 +97,19 @@ class CognitoClient:
             ), None)
         
         return matching_user
+    
+def verify_api_key(
+        _api_key: str = Depends(header_scheme),
+        db_handler: DBHandler = Depends(DBHandler.get_session),
+):
+    
+    env_settings = CognitoSettings()
+    env_key = env_settings.lambda_api_key
+
+    if _api_key != env_key:
+        raise HTTPException(status_code=403, detail="Incorrect access code.")
+    
+    return db_handler
 
 # Function to Verify JWT Token
 def verify_token(

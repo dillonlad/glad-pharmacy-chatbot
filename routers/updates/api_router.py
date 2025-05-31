@@ -36,7 +36,7 @@ async def get_updates(user=Depends(verify_token)):
     unread_forms = db_handler.fetchall(sql)
     repeats = next((_form_count["unread_entries"] for _form_count in unread_forms if _form_count["form_name"] == "repeat-prescription-sign-up"), 0)
     contact_forms = next((_form_count["unread_entries"] for _form_count in unread_forms if _form_count["form_name"] == "contact-form"), 0)
-        
+    
     return UpdatesOut(
         orders=orders_out, 
         unread_whatsapps=number_of_unread_whatsapps, 

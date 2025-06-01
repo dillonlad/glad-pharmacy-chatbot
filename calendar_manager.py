@@ -43,9 +43,11 @@ class CalendarManager:
         month_utc = month_start_dt.astimezone(pytz.UTC)
 
         sql = """
-                select * from calendar
-                where end >= '%s'
-              """ % (month_utc,)
+                select calendar.id, et.description, calendar.user_sub, calendar.site, calendar.notes, calendar.start, calendar.end, calendar.days, calendar.status, calendar.added_by, calendar.created
+                from calendar
+                inner join event_types et on et.id=calendar.event_type_id
+                where calendar.end >= '%s' and month(calendar.end)=%s 
+              """ % (month_utc, month,)
         
         events = self._db_handler.fetchall(sql)
 

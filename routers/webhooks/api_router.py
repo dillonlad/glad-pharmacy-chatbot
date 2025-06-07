@@ -37,21 +37,29 @@ async def process_queue(background_tasks: BackgroundTasks):
     }
 
 @router.get("/get-all-events")
-async def get_all_events(db_handler: DBHandler = Depends(verify_api_key)):
+async def get_all_events(year: int = None, month: int = None, db_handler: DBHandler = Depends(verify_api_key)):
     """
     Get all of the events needed to generate a report for the last month.
     """
 
+    report_year = year
+    report_month = month
 
-    tz = pytz.timezone('Europe/London')
+    if report_year is None and report_month is None:
+
+        tz = pytz.timezone('Europe/London')
         # Get current date in Europe/London
-    now = datetime.now(tz)
+        now = datetime.now(tz)
 
-    yesterday_dt = now - timedelta(days=1)
+        yesterday_dt = now - timedelta(days=1)
+
+        report_year = yesterday_dt.year
+        report_month = yesterday_dt.month
+
     calendar_manager = CalendarManager(db_handler)
     cognito_client = CognitoClient()
 
-    return calendar_manager.report_generator(cognito_client, yesterday_dt.year, yesterday_dt.month)
+    return calendar_manager.report_generator(cognito_client, report_year, report_month)
 
 @router.get("/s3-extract")
 async def s3_extract(object_key:str):

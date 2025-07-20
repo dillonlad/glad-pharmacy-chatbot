@@ -19,6 +19,7 @@ class ChannelOut(BaseModel):
     date: Optional[Union[date, time, datetime]]
     unread: bool
     profile_name: str
+    on_wa: bool
 
 class ChannelIn(BaseModel):
 

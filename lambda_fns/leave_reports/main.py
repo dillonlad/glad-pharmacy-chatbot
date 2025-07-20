@@ -25,14 +25,16 @@ def lambda_handler(event, context):
 
     if month is not None and year is not None:
         params = {"month": month, "year": year}
-
+    print("here 1")
     response = requests.get("https://api.gladpharmacy.co.uk/webhooks/get-all-events", params=params, headers=headers)
-
+    print("here 2")
     if response.status_code != 200:
         print("Request failed.")
         return
     
     data = response.json()
+
+    print(data)
     users = data.get("users", {"Users": []})
     events = data.get("events", [])
 
@@ -79,12 +81,12 @@ def lambda_handler(event, context):
             zipf.writestr(f"{user_name}.xlsx", output.getvalue())
 
     zip_buffer.seek(0)
-
+    print("sending emails")
     ses_client = boto3.client("ses", region_name=SES_REGION)
     try:
         ses_client.send_raw_email(
             Source=FROM_EMAIL,
-            Destinations=TO_EMAILS, 
+            Destinations=TO_EMAILS.split(","), 
             RawMessage={"Data": build_email_with_attachment(zip_buffer.getvalue())}
         )
     except ClientError as e:

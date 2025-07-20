@@ -87,7 +87,7 @@ class WhatsAppClient:
         previous_messages = self.get_conversation(conversation_id) if previous_messages is None else previous_messages
 
         conversation = self._db_handler.fetchone(
-            "SELECT id, phone_number, profile_name from conversations where id = {} and preference > 0".format(conversation_id)
+            "SELECT id, phone_number, profile_name from conversations where id = {} and preference > 0 and on_wa = 1".format(conversation_id)
         ) if conversation is None else conversation
 
         if conversation is None:
@@ -155,7 +155,7 @@ class WhatsAppClient:
 
         previous_messages = self.get_conversation(conversation_id)
         conversation = self._db_handler.fetchone(
-            "SELECT id, phone_number, profile_name from conversations where id = {} and preference > 0".format(conversation_id)
+            "SELECT id, phone_number, profile_name from conversations where id = {} and preference > 0 and on_wa=1".format(conversation_id)
         )
         if conversation is None:
             raise HTTPException(status_code=406, detail="No opted in user.")
@@ -254,7 +254,7 @@ class WhatsAppClient:
         """
         
         sql = """
-                select conversations.id, conversations.profile_name, conversations.display_name as `title`, top_message.created as `date`, case when top_message.message is not null and top_message.message != '' then top_message.message when top_message.metadata is not null then 'Multimedia' else 'No Messages' end as `subtitle`, conversations.read
+                select conversations.id, conversations.profile_name, conversations.display_name as `title`, top_message.created as `date`, case when top_message.message is not null and top_message.message != '' then top_message.message when top_message.metadata is not null then 'Multimedia' else 'No Messages' end as `subtitle`, conversations.read, conversations.on_wa
                 from conversations
                 left outer join (
                 SELECT m1.conversation_id, m1.message, m1.metadata, m1.created
@@ -295,7 +295,7 @@ class WhatsAppClient:
         """
         
         sql = """
-                SELECT messages.id, messages.type, messages.message, messages.metadata, messages.is_me, messages.status, messages.created 
+                SELECT messages.id, messages.type, messages.message, messages.metadata, messages.is_me, messages.status, messages.created, conversations.on_wa 
                 from conversations
                 inner join messages on conversations.id=messages.conversation_id 
                 where conversations.id = {} and conversations.active=1
@@ -307,6 +307,7 @@ class WhatsAppClient:
 
         empty_conversation = len(messages) == 0
 
+        on_wa = True
         for message in messages:
             _message = message
             if message["message"] != "":
@@ -323,6 +324,8 @@ class WhatsAppClient:
 
             if bool(message["is_me"]) is False:
                 last_user_msg_dt = message["created"]
+
+            on_wa = message["on_wa"]
 
         if mark_as_read is True:
             update_sql = """update conversations set `read`=1 where id = {}""".format(id)
@@ -393,7 +396,15 @@ class WhatsAppClient:
                 
                 metadata = json.loads(message["metadata"]) if message["metadata"] is not None else {}
                 metadata["failed_reason"] = status_update["errors"]
+                message_undeliverable_error = next((err for err in status_update["errors"] if err.get("code", None) == 131026), None)
                 metadata = json.dumps(metadata)
+
+                if message_undeliverable_error is not None:
+
+                    # Number is not on whatsapp
+                    cursor.execute(
+                        "UPDATE conversations set `on_wa`=0 where id=(select `messages`.conversation_id from `messages` where `messages`.id=%s limit 1)", (message["id"],)
+                    )
             else:
                 metadata = message["metadata"]
             

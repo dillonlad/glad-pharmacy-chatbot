@@ -14,6 +14,7 @@ from routers.subscriptions.api_router import router as subscriptions_router
 from routers.voicemails.api_router import router as voicemails_router
 from routers.staff import router as staff_router
 from routers.calendar.api_router import router as calendar_router
+from routers.passport.api_router import router as passport_router
 
 
 from pydantic import BaseModel
@@ -73,6 +74,7 @@ def create_app(logger: Logger = None) -> FastAPI:
     app.include_router(voicemails_router)
     app.include_router(staff_router)
     app.include_router(calendar_router)
+    app.include_router(passport_router)
 
     # Set CORS access (Allows access from a front-end hosted on a separate domain)
     app.add_middleware(

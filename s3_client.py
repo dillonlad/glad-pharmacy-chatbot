@@ -91,9 +91,46 @@ class S3Client:
             Key=key,
             Body=content,
         )
-    
+        
     def delete_object(self, key):
         return self._s3_client.delete_object(
             Bucket=self._settings.form_uploads_bucket, 
             Key=key,
         )
+
+    # --- NEW METHOD ---
+    def upload_jpeg_from_bytes(self, key: str, data: bytes, public: bool = False, metadata: dict | None = None):
+        """
+        Upload an image (JPEG) to S3 from raw bytes with the correct Content-Type.
+
+        :param key: Destination key in the bucket (e.g. 'images/photo.jpg').
+        :param data: Raw JPEG bytes.
+        :param public: If True, sets ACL to 'public-read'.
+        :param metadata: Optional user-defined metadata dict.
+        :return: The boto3 put_object response.
+        :raises: botocore.exceptions.ClientError on failure.
+        """
+        bucket = self._settings.form_uploads_bucket
+
+        # Light sanity check for JPEG magic bytes; log-only, do not block upload.
+        if not (len(data) >= 3 and data[0] == 0xFF and data[1] == 0xD8 and data[2] == 0xFF):
+            self._logger.warning("upload_jpeg_from_bytes: data does not appear to start with JPEG magic bytes.")
+
+        params = {
+            "Bucket": bucket,
+            "Key": key,
+            "Body": data,
+            "ContentType": "image/jpeg",
+        }
+        if metadata:
+            params["Metadata"] = metadata
+        if public:
+            params["ACL"] = "public-read"
+
+        try:
+            resp = self._s3_client.put_object(**params)
+            self._logger.info("Uploaded JPEG to s3://%s/%s", bucket, key)
+            return resp
+        except ClientError:
+            self._logger.exception("Failed to upload JPEG to s3://%s/%s", bucket, key)
+            raise

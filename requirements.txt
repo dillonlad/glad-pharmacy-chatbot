@@ -13,3 +13,4 @@ http-ece==1.2.1
 py-vapid==1.9.2
 pywebpush==2.0.3
 phonenumbers==9.0.1
+python-multipart==0.0.20

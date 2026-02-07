@@ -14,3 +14,4 @@ py-vapid==1.9.2
 pywebpush==2.0.3
 phonenumbers==9.0.1
 python-multipart==0.0.20
+woocommerce==3.0.0

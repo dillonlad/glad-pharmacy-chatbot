@@ -9,3 +9,9 @@ class MetricsOut(BaseModel):
 
     total: int
     popular: list[ItemTotal]
+
+
+class CancelOrderIn(BaseModel):
+
+    reason: str | None = None
+    out_of_stock_item_skus: list[int] = []

@@ -7,6 +7,7 @@ class ItemOut(BaseModel):
     item_name: str
     item_sku: int
     quantity: int
+    item_product_id: int
 
 class OrderUpdateOut(BaseModel):
     id: int

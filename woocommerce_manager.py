@@ -1,10 +1,30 @@
 from wp_db_handler import DBHandler
 from data_structures import ItemOut, OrderUpdateOut
+from woocommerce import API
+from pydantic_settings import BaseSettings
+
+class WoocommerceApiSettings(BaseSettings):
+
+    class Config:
+        env_prefix = "wc_api_"
+        case_sensitive = False
+
+    url: str
+    consumer_key: str
+    consumer_secret: str
+    wp_api: bool = True
+    version: str = "wc/v3"
 
 class WoocommerceManager:
 
     def __init__(self, db_handler: DBHandler):
         self._db_handler = db_handler
+        self._wc_settings = WoocommerceApiSettings()
+        self._wc_api = API(
+            url=self._wc_settings.url,
+            consumer_key=self._wc_settings.consumer_key,
+            consumer_secret=self._wc_settings.consumer_secret,
+        )
 
     def get_metrics(self):
         """
@@ -51,7 +71,7 @@ class WoocommerceManager:
         for _order in on_hold_orders:
             items = self._db_handler.fetchall("""
                     SELECT oi.order_item_name AS product_name,
-                    oim_qty.meta_value AS quantity, oim_sku.sku as product_sku
+                    oim_qty.meta_value AS quantity, oim_sku.sku as product_sku, oim_sku.meta_value AS product_id
                     FROM wp_woocommerce_order_items oi
                     LEFT JOIN (
                         select b_meta.meta_value, b_meta.order_item_id, b_meta.meta_key, lookup.sku 
@@ -66,7 +86,12 @@ class WoocommerceManager:
             
             order_items = []
             for _item in items:
-                _item_out = ItemOut(item_name=_item["product_name"], quantity=_item["quantity"], item_sku=_item["product_sku"])
+                _item_out = ItemOut(
+                    item_name=_item["product_name"], 
+                    quantity=_item["quantity"], 
+                    item_sku=_item["product_sku"],
+                    item_product_id=_item["product_id"],
+                    )
                 order_items.append(_item_out)
 
             order_update_out = OrderUpdateOut(
@@ -82,3 +107,11 @@ class WoocommerceManager:
             orders_out.append(order_update_out)
 
         return orders_out
+    
+    def update_product(self, product_id, **kwargs):
+
+        return self._wc_api.put(f"products/{product_id}", kwargs).json()
+
+    def get_product_details(self, product_id):
+
+        return self._wc_api.get(f"products").json()

@@ -4,7 +4,7 @@ from paypal_handler import PayPalHandler
 from woocommerce_manager import WoocommerceManager
 from wp_db_handler import DBHandler
 from data_structures import OrderUpdateOut
-from routers.orders.data_structures import MetricsOut
+from routers.orders.data_structures import CancelOrderIn, MetricsOut
 
 router = APIRouter(prefix="/orders")
 
@@ -22,6 +22,7 @@ async def get_metrics(user=Depends(verify_token)):
 @router.post("/cancel-order", response_model=dict[str, list[OrderUpdateOut]])
 async def cancel_order(
     transaction_id: str,
+    params: CancelOrderIn,
     user=Depends(verify_token)
 ):
     """
@@ -35,6 +36,11 @@ async def cancel_order(
     paypal_handler.close_session()
 
     wc_manager = WoocommerceManager(db_handler)
+    sql = """select product_id from wp_wc_product_meta_lookup where sku in ({})""".format(",".join(["'{}'".format(str(_item_sku)) for _item_sku in params.out_of_stock_item_skus]))
+    product_ids = db_handler.fetchall(sql)
+    for item_id in product_ids:
+        wc_manager.update_product(item_id["product_id"], stock_status="outofstock")
+
     order_updates = wc_manager.get_orders()
 
     return {

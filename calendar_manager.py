@@ -76,7 +76,7 @@ class CalendarManager:
                 select calendar.id, et.description, calendar.user_sub, calendar.site, calendar.notes, calendar.start, calendar.end, calendar.days, calendar.status, calendar.added_by, calendar.created
                 from calendar
                 inner join event_types et on et.id=calendar.event_type_id
-                where calendar.end >= '%s' and month(calendar.end)=%s 
+                where calendar.end >= '%s'
 
               """ % (month_utc, month,)
         

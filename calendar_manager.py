@@ -60,12 +60,14 @@ class CalendarManager:
     
     def report_generator_year(self, cognito_client: CognitoClient, year: int, month: int):
 
-        if month > 4:
+        if month <= 4:
             year -= 1
 
         tz = pytz.timezone('Europe/London')
 
         month_start_dt = datetime(year, 4, 1, 0, 0, tzinfo=tz)
+
+        print(month_start_dt)
 
         # repeat sql query for month
         month_utc = month_start_dt.astimezone(pytz.UTC)

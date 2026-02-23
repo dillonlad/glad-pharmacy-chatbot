@@ -78,7 +78,7 @@ class CalendarManager:
                 inner join event_types et on et.id=calendar.event_type_id
                 where calendar.end >= '%s'
 
-              """ % (month_utc, month,)
+              """ % (month_utc,)
         
         events = self._db_handler.fetchall(sql)
 

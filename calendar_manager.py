@@ -58,7 +58,8 @@ class CalendarManager:
             "users": all_users,
         }
     
-    def report_generator_year(self, cognito_client: CognitoClient, year: int, month: int):
+    def report_generator_year(self, cognito_client: CognitoClient, year: int, month: int, year_to: int, month_to: int):
+
 
         if month <= 4:
             year -= 1
@@ -66,19 +67,22 @@ class CalendarManager:
         tz = pytz.timezone('Europe/London')
 
         month_start_dt = datetime(year, 4, 1, 0, 0, tzinfo=tz)
+        month_end_dt = datetime(year_to, month_to, 1, 0, 0, tzinfo=tz)
 
         print(month_start_dt)
+        print(month_end_dt)
 
         # repeat sql query for month
         month_utc = month_start_dt.astimezone(pytz.UTC)
+        end_utc = month_end_dt.astimezone(pytz.UTC)
 
         sql = """
                 select calendar.id, et.description, calendar.user_sub, calendar.site, calendar.notes, calendar.start, calendar.end, calendar.days, calendar.status, calendar.added_by, calendar.created
                 from calendar
                 inner join event_types et on et.id=calendar.event_type_id
                 where calendar.end >= '%s'
-
-              """ % (month_utc,)
+                and calendar.end < '%s'
+              """ % (month_utc, end_utc,)
         
         events = self._db_handler.fetchall(sql)
 

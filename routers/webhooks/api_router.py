@@ -84,7 +84,7 @@ async def get_all_events_year(year: int = None, month: int = None, db_handler: D
     calendar_manager = CalendarManager(db_handler)
     cognito_client = CognitoClient()
 
-    return calendar_manager.report_generator_year(cognito_client, report_year, report_month)
+    return calendar_manager.report_generator_year(cognito_client, report_year, report_month, report_year, 4)
 
 @router.get("/s3-extract")
 async def s3_extract(object_key:str):

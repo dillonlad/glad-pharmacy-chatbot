@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 import json
-from auth import verify_token
+from auth import CognitoClient, verify_token
 from calendar_manager import CalendarManager
 from routers.staff.clock.data_structures import Leave, LeaveOut, LeaveDecision, NotesIn
 from ses_client import SESClient, SESTemplates
@@ -42,15 +42,22 @@ async def book_leave(
     existing_calendar = db_handler.fetchone(existing_calendar_sql)
     if existing_calendar is not None:
         raise HTTPException(status_code=400, detail="Overlaps existing schedule.")
+    calendar_manager = CalendarManager(db_handler)
+    al_entitlement = 9999
+    matching_user = user.cognito_client.get_user_from_sub(user_sub)
+    if matching_user and params.type == "annual_leave": 
+        user_attr = matching_user.get("Attributes", [])
+        al_entitlement = next((user_attr["Value"] for user_attr in user_attr if user_attr["Name"] in ["al_entitlement", "custom:al_entitlement"]), 25)
+        print(al_entitlement)
+        if not calendar_manager.has_enough_time(user_sub, al_entitlement, params.start, params.end,):
+            raise HTTPException(status_code=428, detail="Not enough lime left")
     
     if user.sub != user_sub:
 
-        matching_user = user.cognito_client.get_user_from_sub(user_sub)
-        
         if matching_user: 
-            user_attr = matching_user.get("Attributes", [])
             user_name = next((_attr["Value"] for _attr in user_attr if _attr["Name"] == "name"), None)
             user_username = matching_user.get("Username", "")
+
         else:
             user_name = user.name
             user_username = user.email
@@ -62,6 +69,7 @@ async def book_leave(
     else:
         user_name = user.name
         _site = user.groups[0] if len(user.groups) == 1 else "all"
+    
 
     if user.is_admin is False:
         # Users must be colleagues for them to book for one another. Can just call get admin user
@@ -97,7 +105,7 @@ async def book_leave(
     calendar_sql = "INSERT INTO calendar (event_type_id, user_sub, title, start, end, status, added_by, site, notes, days) VALUES (%s, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %s)" % (event_type["id"], user_sub, title, start, end, leave_status, user.sub, _site, params.notes, days_taken,)
     db_handler.execute(calendar_sql, True)
 
-    calendar_manager = CalendarManager(db_handler)
+    
     
     return {
         "events": calendar_manager.get_all_events(user),

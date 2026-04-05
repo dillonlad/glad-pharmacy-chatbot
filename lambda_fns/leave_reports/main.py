@@ -1,4 +1,5 @@
 import json
+import calendar
 import boto3
 import requests
 import pandas as pd
@@ -11,6 +12,36 @@ from dateutil import parser
 SES_REGION = "eu-west-2"  # Change if needed
 TO_EMAILS = os.environ.get("TO_EMAILS")
 FROM_EMAIL = os.environ.get("FROM_EMAIL")  # Must be verified in SES
+
+def calculate_days(row, target_month):
+    start = row['start']
+    end = row['end']
+    
+    # Convert to London time to check against local 00:00 and 23:59
+    start_local = start.tz_convert('Europe/London')
+    end_local = end.tz_convert('Europe/London')
+    
+    # Condition 1: End date is in another month
+    if end.month != start.month:
+        # Get the number of days in the specific 'month' variable
+        # calendar.monthrange returns (weekday of first day, number of days)
+        _, days_in_month = calendar.monthrange(start.year, target_month)
+        return float(days_in_month)
+
+    # Condition 2: Same month, full day coverage (00:00:00 to 23:59:00 in London time)
+    if (start.month == end.month and 
+        start_local.time() == pd.Timestamp("00:00:00").time() and 
+        end_local.time() == pd.Timestamp("23:59:00").time()):
+        # Assuming you want to treat this as the full calendar difference + 1 day
+        return (end - start).days + 1
+
+    # Condition 3: Same day calculation (Fraction of 8-hour/28800s day)
+    if start.date() == end.date():
+        seconds_diff = (end - start).total_seconds()
+        return seconds_diff / 28800
+
+    # Default fallback (if none of the specific logic above hits)
+    return (end - start).days
 
 def lambda_handler(event, context):
     # Step 1: Get users and events
@@ -63,6 +94,7 @@ def lambda_handler(event, context):
                     if not filtered:
                         continue
                     df = pd.DataFrame(filtered)
+                    df['days'] = df.apply(calculate_days, axis=1, target_month=month)
 
                     if event_type in ["Annual Leave", "Sickness"]:
                         total_days = df.get("days", pd.Series(dtype=float)).sum()

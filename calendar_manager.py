@@ -1,3 +1,5 @@
+import math
+
 import pytz
 from datetime import datetime
 
@@ -33,37 +35,15 @@ class CalendarManager:
 
         return tz_events
     
-    def has_enough_time(self, user_sub, al_entitlement, request_start_utc: datetime, request_end_utc: datetime,) -> bool:
-
-        current_dt = request_start_utc
-
-        from_year = current_dt.year
-        if current_dt.month <= 4:
-            from_year -= 1
-            to_year = current_dt.year
-        else:
-            to_year = current_dt.year + 1
-
-        tz = pytz.timezone('Europe/London')
-
-        month_start_dt = datetime(from_year, 4, 1, 0, 0, tzinfo=tz)
-        month_end_dt = datetime(to_year, 4, 1, 0, 0, tzinfo=tz)
-
-        print(month_start_dt)
-        print(month_end_dt)
-
-        # repeat sql query for month
-        month_utc = month_start_dt.astimezone(pytz.UTC)
-        end_utc = month_end_dt.astimezone(pytz.UTC)
+    def get_time_remaining(self, month_utc, end_utc, user_sub,):
 
         sql = """
                 select calendar.id, et.description, calendar.user_sub, calendar.site, calendar.notes, calendar.start, calendar.end, calendar.days, calendar.status, calendar.added_by, calendar.created
                 from calendar
                 inner join event_types et on et.id=calendar.event_type_id
-                where calendar.end >= '%s'
-                and (calendar.end < '%s' or (calendar.start < '%s' and calendar.end >= '%s'))
-                and calendar.user_sub='%s'
-              """ % (month_utc, end_utc, end_utc, end_utc, user_sub,)
+                where (calendar.end between '%s' and '%s' or calendar.start between '%s' and '%s')
+                and calendar.user_sub='%s' and calendar.status='approved'
+              """ % (month_utc, end_utc, month_utc, end_utc, user_sub,)
         
         events = self._db_handler.fetchall(sql)
         total_days = 0
@@ -91,6 +71,35 @@ class CalendarManager:
 
         remaining_hours_days = remaining_hours / 8
         total_days_taken = total_days + remaining_hours_days
+
+        return round(total_days_taken, 2)
+
+    
+    def has_enough_time(self, user_sub, al_entitlement, request_start_utc: datetime, request_end_utc: datetime,) -> bool:
+
+        current_dt = request_start_utc
+
+        from_year = current_dt.year
+        if current_dt.month < 4:
+            from_year -= 1
+            to_year = current_dt.year
+        else:
+            to_year = current_dt.year + 1
+
+        tz = pytz.timezone('Europe/London')
+
+        month_start_dt = datetime(from_year, 4, 1, 0, 0, tzinfo=tz)
+        month_end_dt = datetime(to_year, 4, 1, 0, 0, tzinfo=tz)
+
+        print(month_start_dt)
+        print(month_end_dt)
+
+        # repeat sql query for month
+        month_utc = month_start_dt.astimezone(pytz.UTC)
+        end_utc = month_end_dt.astimezone(pytz.UTC)
+
+        total_days_taken = self.get_time_remaining(month_utc, end_utc, user_sub)
+        
         request_start_local = request_start_utc.replace(tzinfo=pytz.utc).astimezone(tz=pytz.timezone("Europe/London"))
         request_end_local = request_end_utc.replace(tzinfo=pytz.utc).astimezone(tz=pytz.timezone("Europe/London"))
         print(request_start_local.hour, request_start_utc.minute)

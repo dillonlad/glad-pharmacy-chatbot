@@ -45,8 +45,9 @@ async def book_leave(
     calendar_manager = CalendarManager(db_handler)
     al_entitlement = 9999
     matching_user = user.cognito_client.get_user_from_sub(user_sub)
+    user_attr = matching_user.get("Attributes", [])
+
     if matching_user and params.type == "annual_leave": 
-        user_attr = matching_user.get("Attributes", [])
         al_entitlement = next((user_attr["Value"] for user_attr in user_attr if user_attr["Name"] in ["al_entitlement", "custom:al_entitlement"]), 25)
         print(al_entitlement)
         if not calendar_manager.has_enough_time(user_sub, al_entitlement, params.start, params.end,):

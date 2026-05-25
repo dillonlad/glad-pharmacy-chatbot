@@ -87,6 +87,49 @@ def lambda_handler(event, context):
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
         for user_name, user_events in events_by_user.items():
+            # Filter the events first to see if this user actually has matching data
+            valid_events = [e for e in user_events if e.get("description") in ["Annual Leave", "Sickness", "Extra Hours"]]
+            
+            # If the user has no events matching our target types, skip creating a file entirely
+            if not valid_events:
+                continue
+
+            output = io.BytesIO()
+            has_sheets = False  # Track if we successfully write at least one sheet
+            
+            # Open the writer ONLY after verifying we have valid data to write
+            with pd.ExcelWriter(output, engine="openpyxl") as writer:
+                for event_type in ["Annual Leave", "Sickness", "Extra Hours"]:
+                    filtered = [e for e in user_events if e.get("description") == event_type]
+                    if not filtered:
+                        continue
+                    
+                    df = pd.DataFrame(filtered)
+                    has_sheets = True # We are guaranteed to write a sheet now
+
+                    if event_type in ["Annual Leave", "Sickness"]:
+                        df['days'] = df.apply(calculate_days, axis=1, target_month=month, target_year=year)
+                        total_days = df['days'].sum()
+                        
+                        blank_row = pd.Series({col: "" for col in df.columns})
+                        summary_row = pd.Series({**{col: "" for col in df.columns}, "days": f"Total: {total_days}"})
+                        df = pd.concat([df, blank_row.to_frame().T, summary_row.to_frame().T], ignore_index=True)
+                        
+                    elif event_type == "Extra Hours":
+                        df["duration_hours"] = df.apply(
+                            lambda row: calculate_hours(row.get("start"), row.get("end")), axis=1
+                        )
+                        total_hours = df["duration_hours"].sum()
+                        
+                        blank_row = pd.Series({col: "" for col in df.columns})
+                        summary_row = pd.Series({**{col: "" for col in df.columns}, "duration_hours": f"Total: {total_hours}"})
+                        df = pd.concat([df, blank_row.to_frame().T, summary_row.to_frame().T], ignore_index=True)
+
+                    df.to_excel(writer, sheet_name=event_type, index=False)
+            
+            # Double-check safety guard: only add to zip if openpyxl successfully saved data
+            if has_sheets:
+                zipf.writestr(f"{user_name}.xlsx", output.getvalue())
             output = io.BytesIO()
             with pd.ExcelWriter(output, engine="openpyxl") as writer:
                 for event_type in ["Annual Leave", "Sickness", "Extra Hours"]:

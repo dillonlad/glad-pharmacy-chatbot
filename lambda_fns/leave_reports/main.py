@@ -130,30 +130,30 @@ def lambda_handler(event, context):
             # Double-check safety guard: only add to zip if openpyxl successfully saved data
             if has_sheets:
                 zipf.writestr(f"{user_name}.xlsx", output.getvalue())
-            output = io.BytesIO()
-            with pd.ExcelWriter(output, engine="openpyxl") as writer:
-                for event_type in ["Annual Leave", "Sickness", "Extra Hours"]:
-                    filtered = [e for e in user_events if e.get("description") == event_type]
-                    if not filtered:
-                        continue
-                    df = pd.DataFrame(filtered)
-                    df['days'] = df.apply(calculate_days, axis=1, target_month=month)
+            # output = io.BytesIO()
+            # with pd.ExcelWriter(output, engine="openpyxl") as writer:
+            #     for event_type in ["Annual Leave", "Sickness", "Extra Hours"]:
+            #         filtered = [e for e in user_events if e.get("description") == event_type]
+            #         if not filtered:
+            #             continue
+            #         df = pd.DataFrame(filtered)
+            #         df['days'] = df.apply(calculate_days, axis=1, target_month=month)
 
-                    if event_type in ["Annual Leave", "Sickness"]:
-                        total_days = df.get("days", pd.Series(dtype=float)).sum()
-                        df.loc[len(df.index)] = {col: "" for col in df.columns}
-                        df.loc[len(df.index)] = {**{col: "" for col in df.columns}, "days": total_days}
-                    elif event_type == "Extra Hours":
-                        df["duration_hours"] = df.apply(
-                            lambda row: calculate_hours(row.get("start"), row.get("end")), axis=1
-                        )
-                        total_hours = df["duration_hours"].sum()
-                        df.loc[len(df.index)] = {col: "" for col in df.columns}
-                        df.loc[len(df.index)] = {**{col: "" for col in df.columns}, "duration_hours": total_hours}
+            #         if event_type in ["Annual Leave", "Sickness"]:
+            #             total_days = df.get("days", pd.Series(dtype=float)).sum()
+            #             df.loc[len(df.index)] = {col: "" for col in df.columns}
+            #             df.loc[len(df.index)] = {**{col: "" for col in df.columns}, "days": total_days}
+            #         elif event_type == "Extra Hours":
+            #             df["duration_hours"] = df.apply(
+            #                 lambda row: calculate_hours(row.get("start"), row.get("end")), axis=1
+            #             )
+            #             total_hours = df["duration_hours"].sum()
+            #             df.loc[len(df.index)] = {col: "" for col in df.columns}
+            #             df.loc[len(df.index)] = {**{col: "" for col in df.columns}, "duration_hours": total_hours}
 
-                    df.to_excel(writer, sheet_name=event_type, index=False)
+            #         df.to_excel(writer, sheet_name=event_type, index=False)
 
-            zipf.writestr(f"{user_name}.xlsx", output.getvalue())
+            # zipf.writestr(f"{user_name}.xlsx", output.getvalue())
 
     zip_buffer.seek(0)
     print("sending emails")

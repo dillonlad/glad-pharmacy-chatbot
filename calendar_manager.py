@@ -42,7 +42,7 @@ class CalendarManager:
                 from calendar
                 inner join event_types et on et.id=calendar.event_type_id
                 where (calendar.end between '%s' and '%s' or calendar.start between '%s' and '%s')
-                and calendar.user_sub='%s' and calendar.status='approved'
+                and calendar.user_sub='%s' and calendar.status='approved' and et.id = 1
               """ % (month_utc, end_utc, month_utc, end_utc, user_sub,)
         
         events = self._db_handler.fetchall(sql)

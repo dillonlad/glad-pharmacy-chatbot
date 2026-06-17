@@ -38,10 +38,6 @@ async def book_leave(
     start = params.start.strftime("%y-%m-%d %H:%M")
     end = params.end.strftime("%y-%m-%d %H:%M")
 
-    existing_calendar_sql = "SELECT id from calendar where user_sub='%s' and ('%s' between start and end or '%s' between start and end) and status != 'Rejected'" % (user_sub, start, end,)
-    existing_calendar = db_handler.fetchone(existing_calendar_sql)
-    if existing_calendar is not None:
-        raise HTTPException(status_code=400, detail="Overlaps existing schedule.")
     calendar_manager = CalendarManager(db_handler)
     al_entitlement = 9999
     matching_user = user.cognito_client.get_user_from_sub(user_sub)
@@ -71,7 +67,14 @@ async def book_leave(
         user_name = user.name
         _site = user.groups[0] if len(user.groups) == 1 else "all"
     
-
+    if not user.is_admin:
+        existing_calendar_sql = "SELECT id from calendar where site='%s' and ('%s' between start and end or '%s' between start and end) and status != 'Rejected'" % (_site, start, end,)
+    else:
+        existing_calendar_sql = "SELECT id from calendar where user_sub='%s' and ('%s' between start and end or '%s' between start and end) and status != 'Rejected'" % (user_sub, start, end,)
+    existing_calendar = db_handler.fetchone(existing_calendar_sql)
+    if existing_calendar is not None:
+        raise HTTPException(status_code=400, detail="Overlaps existing schedule.")
+    
     if user.is_admin is False:
         # Users must be colleagues for them to book for one another. Can just call get admin user
         # for current site

@@ -9,70 +9,83 @@ import os
 from botocore.exceptions import ClientError
 from dateutil import parser
 
-SES_REGION = "eu-west-2"  # Change if needed
-TO_EMAILS = os.environ.get("TO_EMAILS")
-FROM_EMAIL = os.environ.get("FROM_EMAIL")  # Must be verified in SES
+SES_REGION = "eu-west-2"
+TO_EMAILS = os.environ.get("TO_EMAILS", "")
+FROM_EMAIL = os.environ.get("FROM_EMAIL", "")
 
-def calculate_days(row, target_month):
-    start = row['start']
-    end = row['end']
-    
-    # Convert to London time to check against local 00:00 and 23:59
-    start_local = start.tz_convert('Europe/London')
-    end_local = end.tz_convert('Europe/London')
-    
-    # Condition 1: End date is in another month
-    if end.month != start.month:
-        # Get the number of days in the specific 'month' variable
-        # calendar.monthrange returns (weekday of first day, number of days)
-        _, days_in_month = calendar.monthrange(start.year, target_month)
-        return float(days_in_month)
+def calculate_days(row, target_month, target_year):
+    """
+    Safely parses and calculates the calendar days or fractions of a day 
+    an event consumes strictly within the target billing month.
+    """
+    try:
+        # Crucial Fix: Convert raw strings/objects from API to localized pandas datetimes first
+        start = pd.to_datetime(row['start']).tz_localize('UTC').tz_convert('Europe/London')
+        end = pd.to_datetime(row['end']).tz_localize('UTC').tz_convert('Europe/London')
+    except Exception:
+        print('errorr')
+        import traceback
+        print(traceback.format_exc())
+        return 0.0
 
-    # Condition 2: Same month, full day coverage (00:00:00 to 23:59:00 in London time)
-    if (start.month == end.month and 
-        start_local.time() == pd.Timestamp("00:00:00").time() and 
-        end_local.time() == pd.Timestamp("23:59:00").time()):
-        # Assuming you want to treat this as the full calendar difference + 1 day
-        return (end - start).days + 1
+    # Define boundaries for the targeted month
+    _, last_day = calendar.monthrange(int(target_year), int(target_month))
+    month_start = pd.Timestamp(year=int(target_year), month=int(target_month), day=1, tz='Europe/London')
+    month_end = pd.Timestamp(year=int(target_year), month=int(target_month), day=last_day, hour=23, minute=59, second=59, tz='Europe/London')
 
-    # Condition 3: Same day calculation (Fraction of 8-hour/28800s day)
-    if start.date() == end.date():
-        seconds_diff = (end - start).total_seconds()
-        return seconds_diff / 28800
+    # Clamp time ranges to the current target month view 
+    effective_start = max(start, month_start)
+    effective_end = min(end, month_end)
 
-    # Default fallback (if none of the specific logic above hits)
-    return (end - start).days
+    if effective_start >= effective_end:
+        return 0.0
+
+    # Condition 1: Single calendar day calculation (Fraction of 8-hour / 28800s day)
+    if effective_start.date() == effective_end.date():
+        seconds_diff = (effective_end - effective_start).total_seconds()
+        return min(seconds_diff / 28800, 1.0)
+
+    # Condition 2: Multi-day span calculation
+    days_diff = (effective_end.date() - effective_start.date()).days + 1
+    return float(days_diff)
+
+
+def calculate_hours(start_str, end_str):
+    try:
+        start = parser.isoparse(start_str)
+        end = parser.isoparse(end_str)
+        return round((end - start).total_seconds() / 3600, 2)
+    except Exception:
+        return 0.0
+
 
 def lambda_handler(event, context):
-    # Step 1: Get users and events
     headers = {
-        "x-access-key": os.environ.get("ACCESS_KEY")
+        "x-access-key": os.environ.get("ACCESS_KEY", "")
     }
 
-    month = event.get("month", None)
-    year = event.get("year", None)
+    # Set up safe structural fallback datetimes if event is triggered without a payload context
+    now = pd.Timestamp.now(tz='Europe/London')
+    month = int(event.get("month") if event.get("month") is not None else now.month)
+    year = int(event.get("year") if event.get("year") is not None else now.year)
 
-    params = None
-
-    if month is not None and year is not None:
-        params = {"month": month, "year": year}
-    print("here 1")
+    params = {"month": month, "year": year}
+    
+    print(f"Fetching events for: {year}-{month:02d}")
     response = requests.get("https://api.gladpharmacy.co.uk/webhooks/get-all-events", params=params, headers=headers)
-    print("here 2")
+    
     if response.status_code != 200:
-        print("Request failed.")
-        return
+        print(f"Request failed with status code {response.status_code}")
+        return {"statusCode": response.status_code, "body": "Failed fetching user data profile elements."}
     
     data = response.json()
-
-    print(data)
     users = data.get("users", {"Users": []})
     events = data.get("events", [])
 
     user_map = {}
-    for user in users["Users"]:
-        sub = next((attr["Value"] for attr in user["Attributes"] if attr["Name"] == "sub"), None)
-        name = next((attr["Value"] for attr in user["Attributes"] if attr["Name"] == "name"), "Unknown")
+    for user in users.get("Users", []):
+        sub = next((attr["Value"] for attr in user.get("Attributes", []) if attr["Name"] == "sub"), None)
+        name = next((attr["Value"] for attr in user.get("Attributes", []) if attr["Name"] == "name"), "Unknown")
         if sub:
             user_map[sub] = name
 
@@ -85,19 +98,19 @@ def lambda_handler(event, context):
         events_by_user.setdefault(user_name, []).append(_event)
 
     zip_buffer = io.BytesIO()
+    files_added_to_zip = 0
+
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
         for user_name, user_events in events_by_user.items():
-            # Filter the events first to see if this user actually has matching data
-            valid_events = [e for e in user_events if e.get("description") in ["Annual Leave", "Sickness", "Extra Hours"]]
             
-            # If the user has no events matching our target types, skip creating a file entirely
+            # Pre-filter user events to verify they actually match target reporting categories
+            valid_events = [e for e in user_events if e.get("description") in ["Annual Leave", "Sickness", "Extra Hours"]]
             if not valid_events:
                 continue
 
             output = io.BytesIO()
-            has_sheets = False  # Track if we successfully write at least one sheet
+            has_sheets = False  
             
-            # Open the writer ONLY after verifying we have valid data to write
             with pd.ExcelWriter(output, engine="openpyxl") as writer:
                 for event_type in ["Annual Leave", "Sickness", "Extra Hours"]:
                     filtered = [e for e in user_events if e.get("description") == event_type]
@@ -105,9 +118,10 @@ def lambda_handler(event, context):
                         continue
                     
                     df = pd.DataFrame(filtered)
-                    has_sheets = True # We are guaranteed to write a sheet now
+                    has_sheets = True 
 
                     if event_type in ["Annual Leave", "Sickness"]:
+                        # Fixed: Signature now accepts target_year properly
                         df['days'] = df.apply(calculate_days, axis=1, target_month=month, target_year=year)
                         total_days = df['days'].sum()
                         
@@ -127,42 +141,25 @@ def lambda_handler(event, context):
 
                     df.to_excel(writer, sheet_name=event_type, index=False)
             
-            # Double-check safety guard: only add to zip if openpyxl successfully saved data
+            # Only package up file streams that successfully passed openpyxl validation
             if has_sheets:
                 zipf.writestr(f"{user_name}.xlsx", output.getvalue())
-            # output = io.BytesIO()
-            # with pd.ExcelWriter(output, engine="openpyxl") as writer:
-            #     for event_type in ["Annual Leave", "Sickness", "Extra Hours"]:
-            #         filtered = [e for e in user_events if e.get("description") == event_type]
-            #         if not filtered:
-            #             continue
-            #         df = pd.DataFrame(filtered)
-            #         df['days'] = df.apply(calculate_days, axis=1, target_month=month)
-
-            #         if event_type in ["Annual Leave", "Sickness"]:
-            #             total_days = df.get("days", pd.Series(dtype=float)).sum()
-            #             df.loc[len(df.index)] = {col: "" for col in df.columns}
-            #             df.loc[len(df.index)] = {**{col: "" for col in df.columns}, "days": total_days}
-            #         elif event_type == "Extra Hours":
-            #             df["duration_hours"] = df.apply(
-            #                 lambda row: calculate_hours(row.get("start"), row.get("end")), axis=1
-            #             )
-            #             total_hours = df["duration_hours"].sum()
-            #             df.loc[len(df.index)] = {col: "" for col in df.columns}
-            #             df.loc[len(df.index)] = {**{col: "" for col in df.columns}, "duration_hours": total_hours}
-
-            #         df.to_excel(writer, sheet_name=event_type, index=False)
-
-            # zipf.writestr(f"{user_name}.xlsx", output.getvalue())
+                files_added_to_zip += 1
 
     zip_buffer.seek(0)
-    print("sending emails")
+    zip_data = zip_buffer.getvalue()
+
+    if files_added_to_zip == 0:
+        print("No valid user excel files generated. Email sending skipped.")
+        return {"statusCode": 200, "body": "No relevant records matched criteria for this billing period."}
+
+    print("Sending reports package via SES...")
     ses_client = boto3.client("ses", region_name=SES_REGION)
     try:
         ses_client.send_raw_email(
             Source=FROM_EMAIL,
             Destinations=TO_EMAILS.split(","), 
-            RawMessage={"Data": build_email_with_attachment(zip_buffer.getvalue())}
+            RawMessage={"Data": build_email_with_attachment(zip_data)}
         )
     except ClientError as e:
         print(f"Email sending failed: {e}")
@@ -171,16 +168,7 @@ def lambda_handler(event, context):
     return {"statusCode": 200, "body": "Email with reports sent."}
 
 
-def calculate_hours(start_str, end_str):
-    try:
-        start = parser.isoparse(start_str)
-        end = parser.isoparse(end_str)
-        return round((end - start).total_seconds() / 3600, 2)
-    except Exception:
-        return 0.0
-
 def build_email_with_attachment(zip_data):
-
     from email.mime.multipart import MIMEMultipart
     from email.mime.application import MIMEApplication
     from email.mime.text import MIMEText
@@ -198,7 +186,3 @@ def build_email_with_attachment(zip_data):
     msg.attach(attachment)
 
     return msg.as_string()
-
-
-# if __name__=="__main__":
-#     lambda_handler(None, None)

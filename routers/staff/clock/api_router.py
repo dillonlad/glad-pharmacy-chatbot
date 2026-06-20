@@ -67,6 +67,7 @@ async def book_leave(
         user_name = user.name
         _site = user.groups[0] if len(user.groups) == 1 else "all"
     
+    # Only admins can book 2 from the same site
     if not user.is_admin:
         existing_calendar_sql = "SELECT id from calendar where site='%s' and ('%s' between start and end or '%s' between start and end) and status != 'Rejected'" % (_site, start, end,)
     else:

@@ -23,7 +23,7 @@ async def book_leave(
     if user_sub is None:
         user_sub = user.sub
     
-    event_type_sql = "SELECT id, description from event_types where name = '%s'" % (params.type,)
+    event_type_sql = "SELECT id, name, description from event_types where name = '%s'" % (params.type,)
     event_type = db_handler.fetchone(event_type_sql)
     if event_type is None:
         raise HTTPException(status_code=404, detail="No event type found.")
@@ -66,12 +66,12 @@ async def book_leave(
     else:
         user_name = user.name
         _site = user.groups[0] if len(user.groups) == 1 else "all"
-    
-    # Only admins can book 2 from the same site
-    if not user.is_admin:
-        existing_calendar_sql = "SELECT id from calendar where site='%s' and ('%s' between start and end or '%s' between start and end) and status != 'Rejected'" % (_site, start, end,)
-    else:
+
+    if event_type["name"] != "annual_leave" or user.is_admin:
         existing_calendar_sql = "SELECT id from calendar where user_sub='%s' and ('%s' between start and end or '%s' between start and end) and status != 'Rejected'" % (user_sub, start, end,)
+    else:
+        existing_calendar_sql = "SELECT id from calendar where site='%s' and ('%s' between start and end or '%s' between start and end) and status != 'Rejected'" % (_site, start, end,)
+
     existing_calendar = db_handler.fetchone(existing_calendar_sql)
     if existing_calendar is not None:
         raise HTTPException(status_code=400, detail="Overlaps existing schedule.")

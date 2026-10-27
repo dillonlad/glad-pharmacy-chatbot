@@ -113,7 +113,7 @@ async def book_leave(
     
     
     return {
-        "events": calendar_manager.get_all_events(user),
+        "events": calendar_manager.get_all_events(user, False, True),
     }
 
 
@@ -170,6 +170,6 @@ async def confirm_leave(
     )
 
     return {
-        "events": calendar_manager.get_all_events(user),
+        "events": calendar_manager.get_all_events(user, False, True),
         }
 

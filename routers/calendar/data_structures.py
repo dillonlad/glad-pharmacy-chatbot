@@ -1,6 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel
 from datetime import datetime
+from data_structures import EventBase
 
 class AddEvent(BaseModel):
 
@@ -12,18 +13,10 @@ class AddEvent(BaseModel):
     metadata: Optional[dict]
     days: int = 0
 
-class Event(BaseModel):
+class Event(EventBase):
     
-    start: datetime
-    end: datetime
-    title: str
-    id: int
-    background_colour: str
-    status: str
-    can_delete: bool = False
-    site: str
-    notes: str
-    type: str
+    class Config:
+        pass
 
 class NotesIn(BaseModel):
 

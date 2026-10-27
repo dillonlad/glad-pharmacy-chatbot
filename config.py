@@ -13,6 +13,7 @@ class Config(BaseSettings):
     ORIGINS: list[str] = ["http://127.0.0.1:3000", "http://localhost:3000"]
     ALLOW_CREDENTIALS: bool = True
 
+    cash_up_secret_arn: str
 
 def get_config():
     return Config()

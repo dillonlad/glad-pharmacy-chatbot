@@ -13,7 +13,7 @@ async def get_calendar(user = Depends(verify_token)):
     calendar_manager = CalendarManager(db_handler)
 
     return {
-        "events": calendar_manager.get_all_events(user),
+        "events": calendar_manager.get_all_events(user, True, False),
     }
 
 @router.post("/event", response_model=dict[str, list[Event]])
@@ -68,7 +68,7 @@ async def add_event(
     calendar_manager = CalendarManager(db_handler)
     
     return {
-        "events": calendar_manager.get_all_events(user),
+        "events": calendar_manager.get_all_events(user, False, True),
     }
 
 @router.put("/event-notes", response_model=dict[str, list[Event]])
@@ -88,7 +88,7 @@ async def save_notes(event_id: int, params: NotesIn, user = Depends(verify_token
     db_handler.execute(update_sql, True)
 
     return {
-        "events": calendar_manager.get_all_events(user),
+        "events": calendar_manager.get_all_events(user, False, True),
     }
 
 @router.delete("/event", response_model=dict[str, list[Event]])
@@ -119,5 +119,5 @@ async def delete_event(event_id: int, user = Depends(verify_token)):
     calendar_manager = CalendarManager(db_handler)
 
     return {
-        "events": calendar_manager.get_all_events(user),
+        "events": calendar_manager.get_all_events(user, False, True),
     }

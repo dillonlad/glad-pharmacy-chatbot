@@ -1,11 +1,12 @@
 import math
-
+import json
 import pytz
 from datetime import datetime
 
 from auth import CognitoClient
+from data_structures import CachedEvents
 from wp_db_handler import DBHandler
-
+from components import redis_client
 
 class CalendarManager:
 
@@ -16,7 +17,20 @@ class CalendarManager:
     def first_datetime_of_month(year: int, month: int) -> datetime:
         return datetime(year=year, month=month, day=1, tzinfo=pytz.timezone("Europe/London")).astimezone(pytz.timezone("utc"))
 
-    def get_all_events(self, user):
+    def get_all_events(self, user, use_redis = True, reset_redis = False):
+        print("getting all events")
+
+        if use_redis:
+            print("Getting events from redis")
+            cached_events = redis_client.get("calendar_events")
+            if cached_events is None:
+                print("No cached events")
+                reset_redis = True
+            else:
+                print("Returning cached events.")
+                cached_events_dict = json.loads(cached_events)
+                cached_events_dm = CachedEvents(**cached_events_dict)
+                return cached_events_dm.events
 
         sql = "select calendar.id, calendar.notes, calendar.title, calendar.site, calendar.status, calendar.start, calendar.end, event_types.background_colour, event_types.name as `type`, calendar.user_sub, calendar.added_by " \
           "from calendar inner join event_types on calendar.event_type_id=event_types.id and calendar.status != 'Rejected'" \
@@ -32,6 +46,10 @@ class CalendarManager:
             new_event["can_delete"] = False
             if (user and (user.sub == event["user_sub"] or user.sub == event["added_by"]) and event["status"] == "Approved") or user.is_admin is True:
                 new_event["can_delete"] = True
+
+        if reset_redis:
+            cached_events_dm = CachedEvents(events=tz_events)
+            redis_client.set("calendar_events", cached_events_dm.model_dump_json())
 
         return tz_events
     
@@ -143,7 +161,7 @@ class CalendarManager:
                 select calendar.id, et.description, calendar.user_sub, calendar.site, calendar.notes, calendar.start, calendar.end, calendar.days, calendar.status, calendar.added_by, calendar.created
                 from calendar
                 inner join event_types et on et.id=calendar.event_type_id
-                where (month(calendar.end)=%s  or month(calendar.start) = %s) and year(calendar.end) = %s
+                where (month(calendar.end)=%s or month(calendar.start) = %s) and year(calendar.end) = %s
               """ % (month, month, year)
         
         events = self._db_handler.fetchall(sql)

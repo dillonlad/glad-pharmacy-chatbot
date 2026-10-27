@@ -4,6 +4,7 @@ from fastapi.security import HTTPBearer
 from logging import StreamHandler, DEBUG, INFO, getLogger, Logger
 
 from config import get_config
+from components import redis_client
 from routers.chatbot.api_router import router as chatbot_router
 from routers.orders.api_router import router as orders_router
 from routers.updates.api_router import router as updates_router
@@ -20,6 +21,7 @@ from routers.passport.api_router import router as passport_router
 from pydantic import BaseModel
 
 from auth import verify_token
+
 
 def create_app_uvicorn() -> FastAPI:
     """
@@ -84,5 +86,7 @@ def create_app(logger: Logger = None) -> FastAPI:
         allow_methods=config.ALLOWED_METHODS,
         allow_headers=config.ALLOWED_HEADERS,
     )
+
+    redis_client.initialise()
 
     return app

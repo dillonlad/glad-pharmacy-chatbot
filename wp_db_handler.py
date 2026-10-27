@@ -1,4 +1,8 @@
 from pydantic_settings import BaseSettings
+
+import sys
+sys.modules['_mysql_connector'] = None  # Forces pure Python fallback
+
 import mysql.connector
 
 class DBConfig(BaseSettings):
@@ -28,6 +32,19 @@ class DBHandler:
         self._cursor.execute(stmnt)
         if commit is True:
             self.commit()
+
+    def execute_params(self, stmnt: str, params=None, commit=False):
+        self._cursor.execute(stmnt, params or ())
+        if commit is True:
+            return self.commit()
+
+    def fetchall_params(self, stmnt: str, params=None):
+        self._cursor.execute(stmnt, params or ())
+        return self._cursor.fetchall()
+    
+    def fetchone_params(self, stmnt: str, params=None):
+        self._cursor.execute(stmnt, params or ())
+        return self._cursor.fetchone()
 
     def commit(self, last_row_id = False):
         self._conn.commit()

@@ -32,9 +32,6 @@ async def get_staff_members(
     month_start_dt = datetime(from_year, 4, 1, 0, 0, tzinfo=tz)
     month_end_dt = datetime(to_year, 4, 1, 0, 0, tzinfo=tz)
 
-    print(month_start_dt)
-    print(month_end_dt)
-
     # repeat sql query for month
     month_utc = month_start_dt.astimezone(pytz.UTC)
     end_utc = month_end_dt.astimezone(pytz.UTC)

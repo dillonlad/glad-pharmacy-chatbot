@@ -1,5 +1,6 @@
 import math
 import json
+from pydantic_settings import BaseSettings
 import pytz
 from datetime import datetime
 
@@ -8,10 +9,19 @@ from data_structures import CachedEvents
 from wp_db_handler import DBHandler
 from components import redis_client
 
+class CalendarSettings(BaseSettings):
+
+    class Config:
+        env_prefix = "calendar_"
+        case_sensitive = False
+
+    use_redis: bool = False
+
 class CalendarManager:
 
     def __init__(self, db_handler: DBHandler):
         self._db_handler = db_handler
+        self._settings = CalendarSettings()
 
     @staticmethod
     def first_datetime_of_month(year: int, month: int) -> datetime:
@@ -20,7 +30,7 @@ class CalendarManager:
     def get_all_events(self, user, use_redis = True, reset_redis = False):
         print("getting all events")
 
-        if use_redis:
+        if use_redis and self._settings.use_redis:
             print("Getting events from redis")
             cached_events = redis_client.get("calendar_events")
             if cached_events is None:

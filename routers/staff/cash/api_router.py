@@ -100,9 +100,10 @@ async def cash_up(
     db_handler: DBHandler = user.db_handler
     current_date = date.today()
 
-    # 1. Check if a cash sheet already exists for today using parameterized fetchone
-    check_sql = "SELECT id FROM cash_sheets WHERE cash_sheet_date = %s LIMIT 1"
-    existing_sheet = db_handler.fetchone_params(check_sql, (current_date,))
+    # 1. Check if a cash sheet already exists for today *for this site*.
+    # Scoping by site lets each site submit its own cash up on the same day.
+    check_sql = "SELECT id FROM cash_sheets WHERE cash_sheet_date = %s AND site = %s LIMIT 1"
+    existing_sheet = db_handler.fetchone_params(check_sql, (current_date, cached_site,))
 
     if existing_sheet:
         # 2. Overwrite (Update) existing record for today
